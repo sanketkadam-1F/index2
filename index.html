@@ -465,15 +465,6 @@
             color: #01579b;
         }
 
-        .config-notice {
-            background: #fff3cd;
-            border: 1px solid #ffeaa7;
-            border-radius: 5px;
-            padding: 15px;
-            margin-bottom: 15px;
-            color: #856404;
-        }
-
         @media (max-width: 768px) {
             .container {
                 width: 98%;
@@ -533,16 +524,10 @@
                 <div id="login-form" class="auth-form">
                     <h2 style="text-align: center; margin-bottom: 30px; color: #333;">Login to Your Account</h2>
                     
-                    <!-- Configuration Notice -->
-                    <div class="config-notice" id="configNotice">
-                        <strong>Setup Required:</strong> Google Sheets integration not configured. Using fallback users.
-                        <br><small>Configure GOOGLE_SHEET_ID and GOOGLE_API_KEY in the code to enable dynamic user management.</small>
-                    </div>
-                    
                     <!-- Credentials Information -->
                     <div class="credentials-info">
                         <h4>Login Credentials:</h4>
-                        <p style="font-size: 11px; color: #666; margin-bottom: 8px;" id="credentialStatus"><em>Loading credentials...</em></p>
+                        <p style="font-size: 11px; color: #666; margin-bottom: 8px;"><em>Loading credentials from Google Sheets...</em></p>
                         <table class="credentials-table" style="width: 100%;" id="credentialsTable">
                             <tr><td colspan="2"><em>Loading...</em></td></tr>
                         </table>
@@ -565,7 +550,7 @@
         <div id="dashboard-section" class="dashboard">
             <div class="header">
                 <h1>How a Qualified Financial Advisor Will Advise?</h1>
-                <p>Your Next 12 Months Tracker</p>
+                <p>Your Next 12 Months Tracker - FY 2025-26</p>
             </div>
             
             <div class="dashboard-header">
@@ -612,7 +597,7 @@
                             <th>Jun-25</th>
                             <th>Jul-25</th>
                             <th>Aug-25</th>
-                            <th>Sept-25</th>
+                            <th>Sep-25</th>
                             <th>Oct-25</th>
                             <th>Nov-25</th>
                             <th>Dec-25</th>
@@ -686,20 +671,22 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 
     <script>
-        // ======================== GOOGLE SHEETS CONFIGURATION ========================
-        // REPLACE THESE VALUES WITH YOUR ACTUAL GOOGLE SHEETS DETAILS
-        const GOOGLE_SHEET_ID = '1bzJIZbT6OJ1U6HaMxvk1nXDYZzyroP3zLDluBgTnYHw';  // Replace with your Sheet ID
-        const GOOGLE_API_KEY = 'AIzaSyCWvIFxQeUkmzJ8AXWhxC9mg3HIYBzvI6o';    // Replace with your API Key
-        const SHEET_NAME = 'Sheet1';                          // Name of your sheet tab
-        const SHEET_RANGE = 'A:C';                           // Columns A, B, C (UserName, UserID, Password)
-        // ===========================================================================
+        // GOOGLE SHEETS CONFIGURATION
+        const GOOGLE_SHEET_ID = '1bzJIZbT6OJ1U6HaMxvk1nXDYZzyroP3zLDluBgTnYHw';
+        const GOOGLE_API_KEY = 'AIzaSyCWvIFxQeUkmzJ8AXWhxC9mg3HIYBzvI6o';
+        const SHEET_NAME = 'Sheet1';
+        const SHEET_RANGE = 'A:C';
 
-        // Fallback users (used when Google Sheets is not configured or fails)
+        // Fallback users (if Google Sheets fails to load)
         const FALLBACK_USERS = {
             'SanketK': { userId: 'SanketK', password: 'Sak123', userName: 'Sanket Kadam' },
             'SakyK': { userId: 'SakyK', password: 'Syk123', userName: 'Saky Kady' },
             'ChickuT': { userId: 'ChickuT', password: 'C123', userName: 'Chicku test' }
         };
+
+        // Dynamic users loaded from Google Sheets
+        let PREDEFINED_USERS = {};
+        let sheetsLoaded = false;
 
         // Firebase Configuration
         const firebaseConfig = {
@@ -712,17 +699,11 @@
             measurementId: "G-FS0V4DP7F0"
         };
 
-        // Global variables
-        let PREDEFINED_USERS = {};
-        let sheetsLoaded = false;
-        let currentUser = null;
-        let userHabits = [];
-        let editingHabitIndex = -1;
+        // Initialize Firebase
         let firebaseInitialized = false;
         let db = null;
         let auth = null;
 
-        // Initialize Firebase
         try {
             if (firebaseConfig.apiKey !== "your-api-key") {
                 firebase.initializeApp(firebaseConfig);
@@ -736,6 +717,11 @@
         } catch (error) {
             console.error("Firebase initialization failed:", error);
         }
+
+        // Global variables
+        let currentUser = null;
+        let userHabits = [];
+        let editingHabitIndex = -1;
 
         // Default financial habits
         const defaultHabits = [
@@ -757,28 +743,13 @@
         // Load users from Google Sheets
         async function loadUsersFromGoogleSheets() {
             try {
-                // Check if Google Sheets is configured
-                if (GOOGLE_API_KEY === 'YOUR_GOOGLE_API_KEY_HERE' || GOOGLE_SHEET_ID === 'YOUR_GOOGLE_SHEET_ID_HERE') {
-                    console.log("Google Sheets not configured, using fallback users");
-                    PREDEFINED_USERS = FALLBACK_USERS;
-                    sheetsLoaded = true;
-                    updateCredentialsDisplay('Using offline database');
-                    return;
-                }
-
-                document.getElementById('credentialStatus').textContent = 'Loading from Google Sheets...';
-                
                 const url = `https://sheets.googleapis.com/v4/spreadsheets/${GOOGLE_SHEET_ID}/values/${SHEET_NAME}!${SHEET_RANGE}?key=${GOOGLE_API_KEY}`;
                 
                 const response = await fetch(url);
                 const data = await response.json();
                 
-                if (data.error) {
-                    throw new Error(data.error.message || 'Google Sheets API error');
-                }
-                
                 if (data.values && data.values.length > 1) {
-                    // Skip header row, process data rows
+                    // Skip header row (index 0), process data rows
                     const users = {};
                     
                     for (let i = 1; i < data.values.length; i++) {
@@ -799,8 +770,7 @@
                     PREDEFINED_USERS = users;
                     sheetsLoaded = true;
                     console.log(`Loaded ${Object.keys(users).length} users from Google Sheets`);
-                    updateCredentialsDisplay(`Loaded ${Object.keys(users).length} users from Google Sheets`);
-                    document.getElementById('configNotice').style.display = 'none';
+                    updateCredentialsDisplay();
                 } else {
                     throw new Error('No data found in Google Sheet');
                 }
@@ -809,20 +779,14 @@
                 console.log("Using fallback users");
                 PREDEFINED_USERS = FALLBACK_USERS;
                 sheetsLoaded = true;
-                updateCredentialsDisplay('Using offline database (Google Sheets failed)');
+                updateCredentialsDisplay();
                 showMessage('Using offline user database. Some users may not be available.', false);
             }
         }
 
-        // Update credentials display
-        function updateCredentialsDisplay(status) {
+        // Update credentials display on login page
+        function updateCredentialsDisplay() {
             const credentialsTable = document.getElementById('credentialsTable');
-            const credentialStatus = document.getElementById('credentialStatus');
-            
-            if (credentialStatus) {
-                credentialStatus.textContent = status;
-            }
-            
             if (credentialsTable && sheetsLoaded) {
                 let tableHTML = '';
                 Object.values(PREDEFINED_USERS).forEach(user => {
@@ -847,7 +811,7 @@
             });
         };
 
-        // Check localStorage session
+        // Check localStorage session (fallback)
         function checkLocalStorageSession() {
             const savedUserId = localStorage.getItem('currentUserId');
             if (savedUserId && PREDEFINED_USERS[savedUserId]) {
@@ -867,4 +831,57 @@
 
         // Do login
         function doLogin() {
-            const userId =
+            const userId = document.getElementById('loginUserId').value.trim();
+            const password = document.getElementById('loginPassword').value;
+
+            if (!userId || !password) {
+                showMessage('Please fill in all fields', true);
+                return;
+            }
+
+            if (!sheetsLoaded) {
+                showMessage('Still loading user database. Please wait...', true);
+                return;
+            }
+
+            // Check credentials
+            if (PREDEFINED_USERS[userId] && PREDEFINED_USERS[userId].password === password) {
+                currentUser = PREDEFINED_USERS[userId];
+                localStorage.setItem('currentUserId', userId);
+                showDashboard();
+            } else {
+                showMessage('Invalid User ID or password', true);
+            }
+        }
+
+        // Show dashboard
+        function showDashboard() {
+            document.getElementById('auth-section').style.display = 'none';
+            document.getElementById('dashboard-section').style.display = 'block';
+            
+            // Display user information
+            document.getElementById('userName').textContent = currentUser.userName;
+            document.getElementById('userIdDisplay').textContent = currentUser.userId;
+            
+            loadUserHabits();
+        }
+
+        // Load user habits
+        function loadUserHabits() {
+            try {
+                if (firebaseInitialized && currentUser) {
+                    // Load from Firestore
+                    loadFromFirestore();
+                } else {
+                    // Load from localStorage
+                    const habitKey = `habits_${currentUser.userId}`;
+                    const stored = localStorage.getItem(habitKey);
+                    if (stored) {
+                        userHabits = JSON.parse(stored);
+                    } else {
+                        userHabits = initializeDefaultHabits();
+                        localStorage.setItem(habitKey, JSON.stringify(userHabits));
+                    }
+                    renderHabitsTable();
+                }
+            
