@@ -18,8 +18,7 @@
     .container {
       background: white; border-radius: 15px; box-shadow: 0 20px 40px rgba(0,0,0,0.3);
       overflow: hidden;
-      /* WIDER PAGE so rows fit a single line */
-      max-width: 2200px;
+      max-width: 2200px; /* wider page so rows fit a single line */
       width: 98vw;
       margin: 20px;
       position: relative;
@@ -148,9 +147,11 @@
     .scorecard h2 { font-size: 0.9em; margin-bottom: 5px; color: #333; }
     .scorecard .score { font-size: 1.5em; font-weight: bold; display: inline-block; padding: 5px 10px; border-radius: 5px; }
 
-    /* Editable first-month header input */
+    /* ==== NEW: make all month columns exactly the same width ==== */
+    .month-col { width: 90px; }  /* applied to every month th and td */
     .month-input {
-      background: transparent; border: none; color: #fff; text-align: left; width: 110px; font-weight: 600;
+      background: transparent; border: none; color: #fff; text-align: center;
+      width: 100%; padding: 0; margin: 0; height: auto; line-height: 1;
     }
     .month-input:focus { outline: 2px solid #c3b9ea; border-radius: 4px; }
 
@@ -216,18 +217,20 @@
               <th>Levers</th>
               <!-- LEFT aligned header -->
               <th class="habits-header" style="width: 400px;">Financial Habits</th>
-              <th id="month-1-th"><input id="firstMonthInput" class="month-input" value="Apr-25" aria-label="First month (e.g., Sep-25 or 2025-09)"></th>
-              <th><span id="month-2">May-25</span></th>
-              <th><span id="month-3">Jun-25</span></th>
-              <th><span id="month-4">Jul-25</span></th>
-              <th><span id="month-5">Aug-25</span></th>
-              <th><span id="month-6">Sep-25</span></th>
-              <th><span id="month-7">Oct-25</span></th>
-              <th><span id="month-8">Nov-25</span></th>
-              <th><span id="month-9">Dec-25</span></th>
-              <th><span id="month-10">Jan-26</span></th>
-              <th><span id="month-11">Feb-26</span></th>
-              <th><span id="month-12">Mar-26</span></th>
+              <th id="month-1-th" class="month-col">
+                <input id="firstMonthInput" class="month-input" value="Apr-25" aria-label="First month (e.g., Sep-25 or 2025-09)">
+              </th>
+              <th class="month-col"><span id="month-2">May-25</span></th>
+              <th class="month-col"><span id="month-3">Jun-25</span></th>
+              <th class="month-col"><span id="month-4">Jul-25</span></th>
+              <th class="month-col"><span id="month-5">Aug-25</span></th>
+              <th class="month-col"><span id="month-6">Sep-25</span></th>
+              <th class="month-col"><span id="month-7">Oct-25</span></th>
+              <th class="month-col"><span id="month-8">Nov-25</span></th>
+              <th class="month-col"><span id="month-9">Dec-25</span></th>
+              <th class="month-col"><span id="month-10">Jan-26</span></th>
+              <th class="month-col"><span id="month-11">Feb-26</span></th>
+              <th class="month-col"><span id="month-12">Mar-26</span></th>
             </tr>
           </thead>
 
@@ -237,12 +240,12 @@
               <td class="lever-cell">Score</td>
               <td class="score-label-cell"><strong>Your Financial Habits Score</strong></td>
 
-              <td class="score-cell" id="score-m1">0</td><td class="score-cell" id="score-m2">0</td>
-              <td class="score-cell" id="score-m3">0</td><td class="score-cell" id="score-m4">0</td>
-              <td class="score-cell" id="score-m5">0</td><td class="score-cell" id="score-m6">0</td>
-              <td class="score-cell" id="score-m7">0</td><td class="score-cell" id="score-m8">0</td>
-              <td class="score-cell" id="score-m9">0</td><td class="score-cell" id="score-m10">0</td>
-              <td class="score-cell" id="score-m11">0</td><td class="score-cell" id="score-m12">0</td>
+              <td class="score-cell month-col" id="score-m1">0</td><td class="score-cell month-col" id="score-m2">0</td>
+              <td class="score-cell month-col" id="score-m3">0</td><td class="score-cell month-col" id="score-m4">0</td>
+              <td class="score-cell month-col" id="score-m5">0</td><td class="score-cell month-col" id="score-m6">0</td>
+              <td class="score-cell month-col" id="score-m7">0</td><td class="score-cell month-col" id="score-m8">0</td>
+              <td class="score-cell month-col" id="score-m9">0</td><td class="score-cell month-col" id="score-m10">0</td>
+              <td class="score-cell month-col" id="score-m11">0</td><td class="score-cell month-col" id="score-m12">0</td>
             </tr>
           </tbody>
 
@@ -384,6 +387,16 @@
         setMonthsFromStart(d);
       });
     }
+
+    /* Helper: get the last month index in the table that is <= today */
+    function getLastPastMonthIndex(today) {
+      let idx = -1;
+      for (let i = 0; i < months.length; i++) {
+        const d = parseMonthLabel(months[i]);
+        if (d && d <= today) idx = i;
+      }
+      return idx;
+    }
     /* ----------------------------------------------------------- */
 
     window.onload = () => {
@@ -487,6 +500,7 @@
 
           for (let month = 0; month < 12; month++) {
             const monthCell = document.createElement('td');
+            monthCell.className = 'month-col'; /* uniform column width */
             const checkbox = document.createElement('input');
             checkbox.type = 'checkbox';
             checkbox.className = 'habit-checkbox';
@@ -534,7 +548,7 @@
       }
     }
 
-    /* Dynamic current month index based on editable headers */
+    /* Dynamic current month index based on labels */
     function getCurrentMonthIndex() {
       const nowLabel = formatMonthLabel(new Date());
       return months.indexOf(nowLabel);
@@ -550,12 +564,11 @@
         scoreCell.textContent = score;
 
         // Reset classes
-        scoreCell.className = 'score-cell';
+        scoreCell.className = 'score-cell month-col';
         const bands = ['score-base-grey','score-dark-red','score-light-red','score-yellow','score-light-green','score-dark-green'];
         bands.forEach(b => scoreCell.classList.remove(b));
 
-        // New rule: exactly 0 -> base grey, else use 5-band thresholds:
-        // 0–25 dark red (but not 0), >25–50 light red, >50–75 yellow, >75–90 light green, >90 dark green
+        // 0 -> base grey; otherwise 5-band thresholds
         let cls = 'score-dark-red';
         if (score === 0) cls = 'score-base-grey';
         else if (score > 90) cls = 'score-dark-green';
@@ -565,25 +578,26 @@
         scoreCell.classList.add(cls);
       }
 
-      const currentIndex = getCurrentMonthIndex();
-      if (currentIndex !== -1) {
-        const currentScoreElem = document.getElementById(`score-m${currentIndex + 1}`);
-        const currentScore = currentScoreElem.textContent;
+      // Choose the most recent month in the table that is <= today.
+      let cardIndex = getLastPastMonthIndex(new Date());
+      if (cardIndex === -1) cardIndex = 0; // if all months are in future, fall back to first
 
-        const cls = ['score-base-grey','score-dark-red','score-light-red','score-yellow','score-light-green','score-dark-green']
-          .find(c => currentScoreElem.classList.contains(c)) || '';
+      const currentScoreElem = document.getElementById(`score-m${cardIndex + 1}`);
+      const currentScore = currentScoreElem.textContent;
 
-        const currentScoreTextEl = document.getElementById('current-score');
-        currentScoreTextEl.textContent = currentScore;
-        currentScoreTextEl.className = `score ${cls}`;
+      const cls = ['score-base-grey','score-dark-red','score-light-red','score-yellow','score-light-green','score-dark-green']
+        .find(c => currentScoreElem.classList.contains(c)) || '';
 
-        const scorecardEl = document.getElementById('scorecard');
-        scorecardEl.classList.remove('score-base-grey','score-dark-red','score-light-red','score-yellow','score-light-green','score-dark-green');
-        if (cls) scorecardEl.classList.add(cls);
+      const currentScoreTextEl = document.getElementById('current-score');
+      currentScoreTextEl.textContent = currentScore;
+      currentScoreTextEl.className = `score ${cls}`;
 
-        document.getElementById('current-month-header').textContent =
-          `${months[currentIndex]}'s Financial Habit Score`;
-      }
+      const scorecardEl = document.getElementById('scorecard');
+      scorecardEl.classList.remove('score-base-grey','score-dark-red','score-light-red','score-yellow','score-light-green','score-dark-green');
+      if (cls) scorecardEl.classList.add(cls);
+
+      document.getElementById('current-month-header').textContent =
+        `${months[cardIndex]}'s Financial Habit Score`;
     }
 
     function logout() {
