@@ -18,7 +18,7 @@
     .container {
       background: white; border-radius: 15px; box-shadow: 0 20px 40px rgba(0,0,0,0.3);
       overflow: hidden;
-      /* WIDER PAGE */
+      /* WIDER PAGE so rows fit a single line */
       max-width: 2200px;
       width: 98vw;
       margin: 20px;
@@ -71,6 +71,9 @@
     .habits-table th {
       background: #2c2c2c; color: white; padding: 15px 10px; text-align: center; font-weight: 600; font-size: 1em;
     }
+    /* LEFT align specifically the Financial Habits header */
+    .habits-table th.habits-header { text-align: left; padding-left: 12px; }
+
     .habits-table td {
       padding: 6px 8px; /* tighter row height */
       text-align: center; border-bottom: 1px solid #ddd; vertical-align: middle;
@@ -83,11 +86,12 @@
       background: #666; color: white; font-weight: 600; font-size: 1.2em; width: 100px;
     }
 
-    .habit-cell { display: flex; align-items: center; gap: 10px; text-align: left; }
+    .habit-cell { display: flex; align-items: center; gap: 10px; text-align: left; justify-content: flex-start; }
     .habit-text {
       flex: 1; padding: 4px 6px; border: 1px solid transparent; background: transparent; font-size: 1.2em;
       line-height: 1.2; min-height: 0; height: 28px; /* compact */
       white-space: nowrap; overflow: hidden; text-overflow: ellipsis; /* single line */
+      text-align: left;
     }
     .habit-text:focus { outline: none; border: 1px solid #c3b9ea; background: #f9f9f9; }
 
@@ -115,9 +119,10 @@
     .score-label-cell strong { color: #000 !important; }
     .score-row:hover .score-label-cell { background-image: none !important; background-color: #e9ecef !important; color: #000 !important; }
 
-    /* 5-band colors */
+    /* 5-band colors + zero = base grey */
     .score-cell { font-size: 1.1em; font-weight: bold; }
-    .score-dark-red   { background-color: #8B0000 !important; color: #ffffff; } /* 0–25 */
+    .score-base-grey { background-color: #e9ecef !important; color: #000000; } /* score == 0 */
+    .score-dark-red   { background-color: #8B0000 !important; color: #ffffff; } /* 0–25 (but not 0) */
     .score-light-red  { background-color: #f8d7da !important; color: #7f1d1d; } /* >25–50 */
     .score-yellow     { background-color: #fff3cd !important; color: #856404; } /* >50–75 */
     .score-light-green{ background-color: #d4edda !important; color: #155724; } /* >75–90 */
@@ -132,11 +137,12 @@
       text-align: center; position: absolute; top: 50%; right: 30px; transform: translateY(-50%); width: 150px;
       transition: background-color 0.2s, border-color 0.2s, color 0.2s;
     }
-    .scorecard.score-dark-red   { background-color: #8B0000; border-color: #8B0000; }
+    .scorecard.score-base-grey { background-color: #e9ecef; border-color: #dfe3e6; color: #000; }
+    .scorecard.score-dark-red   { background-color: #8B0000; border-color: #8B0000; color: #fff; }
     .scorecard.score-light-red  { background-color: #f8d7da; border-color: #f5c2c7; }
     .scorecard.score-yellow     { background-color: #fff3cd; border-color: #ffeeba; }
     .scorecard.score-light-green{ background-color: #d4edda; border-color: #c3e6cb; }
-    .scorecard.score-dark-green { background-color: #2e7d32; border-color: #2e7d32; }
+    .scorecard.score-dark-green { background-color: #2e7d32; border-color: #2e7d32; color: #fff; }
     .scorecard.score-dark-red h2, .scorecard.score-dark-green h2 { color: #ffffff; }
 
     .scorecard h2 { font-size: 0.9em; margin-bottom: 5px; color: #333; }
@@ -144,7 +150,7 @@
 
     /* Editable first-month header input */
     .month-input {
-      background: transparent; border: none; color: #fff; text-align: center; width: 90px; font-weight: 600;
+      background: transparent; border: none; color: #fff; text-align: left; width: 110px; font-weight: 600;
     }
     .month-input:focus { outline: 2px solid #c3b9ea; border-radius: 4px; }
 
@@ -208,7 +214,8 @@
           <thead>
             <tr>
               <th>Levers</th>
-              <th style="width: 400px;">Financial Habits</th>
+              <!-- LEFT aligned header -->
+              <th class="habits-header" style="width: 400px;">Financial Habits</th>
               <th id="month-1-th"><input id="firstMonthInput" class="month-input" value="Apr-25" aria-label="First month (e.g., Sep-25 or 2025-09)"></th>
               <th><span id="month-2">May-25</span></th>
               <th><span id="month-3">Jun-25</span></th>
@@ -544,13 +551,14 @@
 
         // Reset classes
         scoreCell.className = 'score-cell';
-        const bands = ['score-dark-red','score-light-red','score-yellow','score-light-green','score-dark-green'];
+        const bands = ['score-base-grey','score-dark-red','score-light-red','score-yellow','score-light-green','score-dark-green'];
         bands.forEach(b => scoreCell.classList.remove(b));
 
-        // 5-band thresholds:
-        // 0–25 dark red, >25–50 light red, >50–75 yellow, >75–90 light green, >90 dark green
+        // New rule: exactly 0 -> base grey, else use 5-band thresholds:
+        // 0–25 dark red (but not 0), >25–50 light red, >50–75 yellow, >75–90 light green, >90 dark green
         let cls = 'score-dark-red';
-        if (score > 90) cls = 'score-dark-green';
+        if (score === 0) cls = 'score-base-grey';
+        else if (score > 90) cls = 'score-dark-green';
         else if (score > 75) cls = 'score-light-green';
         else if (score > 50) cls = 'score-yellow';
         else if (score > 25) cls = 'score-light-red';
@@ -562,7 +570,7 @@
         const currentScoreElem = document.getElementById(`score-m${currentIndex + 1}`);
         const currentScore = currentScoreElem.textContent;
 
-        const cls = ['score-dark-red','score-light-red','score-yellow','score-light-green','score-dark-green']
+        const cls = ['score-base-grey','score-dark-red','score-light-red','score-yellow','score-light-green','score-dark-green']
           .find(c => currentScoreElem.classList.contains(c)) || '';
 
         const currentScoreTextEl = document.getElementById('current-score');
@@ -570,7 +578,7 @@
         currentScoreTextEl.className = `score ${cls}`;
 
         const scorecardEl = document.getElementById('scorecard');
-        scorecardEl.classList.remove('score-dark-red','score-light-red','score-yellow','score-light-green','score-dark-green');
+        scorecardEl.classList.remove('score-base-grey','score-dark-red','score-light-red','score-yellow','score-light-green','score-dark-green');
         if (cls) scorecardEl.classList.add(cls);
 
         document.getElementById('current-month-header').textContent =
