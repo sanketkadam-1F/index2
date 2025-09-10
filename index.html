@@ -241,7 +241,7 @@
             padding: 8px;
             border: 1px solid transparent;
             background: transparent;
-            font-size: 1em;
+            font-size: 1.2em;
             line-height: 1.5;
             white-space: normal; /* Enable text wrapping */
             word-wrap: break-word; /* Break long words */
@@ -278,9 +278,9 @@
             font-weight: bold;
         }
 
-        .score-high { background-color: #d4edda !important; }
-        .score-medium { background-color: #fff3cd !important; }
-        .score-low { background-color: #f8d7da !important; }
+        .score-high { background-color: #d4edda !important; color: #155724; }
+        .score-medium { background-color: #fff3cd !important; color: #856404; }
+        .score-low { background-color: #f8d7da !important; color: #721c24; }
 
         .btn-control {
             padding: 12px 22px;
@@ -289,6 +289,33 @@
 
         .credentials-table {
             font-size: 1em;
+        }
+
+        .habit-checkbox {
+            transform: scale(1.5);
+        }
+
+        .scorecard {
+            background: #f8f9fa;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .scorecard h2 {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .scorecard .score {
+            font-size: 3em;
+            font-weight: bold;
+            display: inline-block;
+            padding: 10px 20px;
+            border-radius: 5px;
         }
 
         @media (max-width: 768px) {
@@ -346,6 +373,11 @@
             </div>
 
             <div id="dashboard-message"></div>
+
+            <div id="scorecard" class="scorecard">
+                <h2 id="current-month-header">Current Month's Financial Habit Score</h2>
+                <div id="current-score" class="score">0</div>
+            </div>
             
             <div style="overflow-x: auto;">
                 <table class="habits-table" id="habitsTable">
@@ -447,6 +479,8 @@
             { lever: "Cut unwanted expenses", habit: "Pay credit card bill in full" },
             { lever: "Others", habit: "Invest only via direct MF plans" }
         ];
+
+        const months = ['Apr-25', 'May-25', 'Jun-25', 'Jul-25', 'Aug-25', 'Sep-25', 'Oct-25', 'Nov-25', 'Dec-25', 'Jan-26', 'Feb-26', 'Mar-26'];
 
         window.onload = () => {
             const savedUserId = localStorage.getItem('currentUserId');
@@ -596,6 +630,23 @@
             }
         }
         
+        function getCurrentMonthIndex() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = now.getMonth(); // 0-11
+            let index = -1;
+            if (year === 2025) {
+                if (month >= 3 && month <= 11) {
+                    index = month - 3;
+                }
+            } else if (year === 2026) {
+                if (month >= 0 && month <= 2) {
+                    index = 9 + month;
+                }
+            }
+            return index;
+        }
+
         function calculateScores() {
             const totalHabits = userHabits.length;
             for (let month = 0; month < 12; month++) {
@@ -607,6 +658,16 @@
                 if (score >= 70) scoreCell.classList.add('score-high');
                 else if (score >= 50) scoreCell.classList.add('score-medium');
                 else scoreCell.classList.add('score-low');
+            }
+
+            const currentIndex = getCurrentMonthIndex();
+            if (currentIndex !== -1) {
+                const currentScoreElem = document.getElementById(`score-m${currentIndex + 1}`);
+                const currentScore = currentScoreElem.textContent;
+                const scoreClass = Array.from(currentScoreElem.classList).find(cls => cls.startsWith('score-')) || '';
+                document.getElementById('current-score').textContent = currentScore;
+                document.getElementById('current-score').className = `score ${scoreClass}`;
+                document.getElementById('current-month-header').textContent = `${months[currentIndex]}'s Financial Habit Score`;
             }
         }
         
