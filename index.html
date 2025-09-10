@@ -101,13 +101,13 @@
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #c3b9ea 0%, #a89cd6 100%);
+            background: #6c757d;
             color: white;
         }
 
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(195, 185, 234, 0.3);
+            box-shadow: 0 5px 15px rgba(108, 117, 125, 0.3);
         }
 
         .dashboard {
@@ -176,7 +176,7 @@
         }
 
         .btn-add {
-            background: #c3b9ea;
+            background: #6c757d;
             color: white;
             padding: 10px 20px;
             border: none;
@@ -312,41 +312,41 @@
             background: #f8f9fa;
             border: 1px solid #e0e0e0;
             border-radius: 10px;
-            padding: 20px;
+            padding: 10px;
             margin-bottom: 20px;
             text-align: center;
             position: absolute;
             top: 20px;
             right: 30px;
-            width: 200px;
+            width: 150px;
         }
 
         .scorecard h2 {
-            font-size: 1em;
-            margin-bottom: 10px;
+            font-size: 0.9em;
+            margin-bottom: 5px;
             color: #333;
         }
 
         .scorecard .score {
-            font-size: 2em;
+            font-size: 1.5em;
             font-weight: bold;
             display: inline-block;
-            padding: 10px 20px;
+            padding: 5px 10px;
             border-radius: 5px;
         }
 
         @media (max-width: 768px) {
             html { font-size: 14px; }
             .scorecard {
-                width: 150px;
-                padding: 10px;
+                width: 120px;
+                padding: 8px;
             }
             .scorecard h2 {
-                font-size: 0.9em;
+                font-size: 0.8em;
             }
             .scorecard .score {
-                font-size: 1.5em;
-                padding: 5px 10px;
+                font-size: 1.2em;
+                padding: 4px 8px;
             }
         }
     </style>
@@ -456,7 +456,7 @@
             </div>
 
             <div class="controls" style="display: flex; gap: 15px; margin-top: 20px;">
-                <button class="btn-control btn-save" style="background: #c3b9ea; color: white;" onclick="saveChanges()">Save Changes</button>
+                <button class="btn-control btn-save" style="background: #6c757d; color: white;" onclick="saveChanges()">Save Changes</button>
                 <button class="btn-control btn-reset" style="background: #666; color: white;" onclick="resetToDefaults()">Reset to Defaults</button>
             </div>
         </div>
