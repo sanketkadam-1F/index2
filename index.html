@@ -148,6 +148,7 @@
             border-radius: 10px;
             padding: 20px;
             margin-bottom: 20px;
+            margin-top: 20px; /* Added margin top for spacing */
         }
 
         .add-habit-form {
@@ -217,9 +218,15 @@
             border-bottom: 1px solid #eee;
         }
 
-        .habits-table tr:hover {
+        .habits-table tbody tr:hover {
             background: #f8f9fa;
         }
+        
+        /* Ensure the score row doesn't get a hover effect */
+        .score-row:hover {
+            background: linear-gradient(135deg, #c3b9ea 0%, #a89cd6 100%) !important;
+        }
+
 
         .lever-cell {
             background: #666;
@@ -326,6 +333,7 @@
             background: linear-gradient(135deg, #c3b9ea 0%, #a89cd6 100%);
             font-weight: 700;
             color: white;
+            border-bottom: 2px solid #2c2c2c; /* Added for separation */
         }
 
         .score-cell {
@@ -520,7 +528,6 @@
 </head>
 <body>
     <div class="container">
-        <!-- Authentication Section -->
         <div id="auth-section">
             <div class="header">
                 <h1>Financial Habits Tracker</h1>
@@ -530,11 +537,9 @@
             <div class="auth-container">
                 <div id="message-area"></div>
                 
-                <!-- Login Form -->
                 <div id="login-form" class="auth-form">
                     <h2 style="text-align: center; margin-bottom: 30px; color: #333;">Login to Your Account</h2>
                     
-                    <!-- Credentials Information -->
                     <div class="credentials-info">
                         <h4>Login Credentials:</h4>
                         <table class="credentials-table" style="width: 100%;">
@@ -557,7 +562,6 @@
             </div>
         </div>
 
-        <!-- Dashboard Section -->
         <div id="dashboard-section" class="dashboard">
             <div class="header">
                 <h1>How a Qualified Financial Advisor Will Advise?</h1>
@@ -574,7 +578,48 @@
 
             <div id="dashboard-message"></div>
             
-            <!-- Add New Habit Section -->
+            <div style="overflow-x: auto;">
+                <table class="habits-table" id="habitsTable">
+                    <thead>
+                        <tr>
+                            <th>Levers</th>
+                            <th style="width: 400px;">Financial Habits</th>
+                            <th>Apr-25</th>
+                            <th>May-25</th>
+                            <th>Jun-25</th>
+                            <th>Jul-25</th>
+                            <th>Aug-25</th>
+                            <th>Sep-25</th>
+                            <th>Oct-25</th>
+                            <th>Nov-25</th>
+                            <th>Dec-25</th>
+                            <th>Jan-26</th>
+                            <th>Feb-26</th>
+                            <th>Mar-26</th>
+                        </tr>
+                    </thead>
+                    <tbody> <tr class="score-row">
+                            <td class="lever-cell">Score</td>
+                            <td><strong>Your Financial Habits Score</strong></td>
+                            <td class="score-cell" id="score-m1">0</td>
+                            <td class="score-cell" id="score-m2">0</td>
+                            <td class="score-cell" id="score-m3">0</td>
+                            <td class="score-cell" id="score-m4">0</td>
+                            <td class="score-cell" id="score-m5">0</td>
+                            <td class="score-cell" id="score-m6">0</td>
+                            <td class="score-cell" id="score-m7">0</td>
+                            <td class="score-cell" id="score-m8">0</td>
+                            <td class="score-cell" id="score-m9">0</td>
+                            <td class="score-cell" id="score-m10">0</td>
+                            <td class="score-cell" id="score-m11">0</td>
+                            <td class="score-cell" id="score-m12">0</td>
+                        </tr>
+                    </tbody>
+                    <tbody id="habitsTableBody">
+                        </tbody>
+                </table>
+            </div>
+
             <div class="add-habit-section">
                 <h4 style="margin-bottom: 15px; color: #333;">Add New Financial Habit</h4>
                 <div class="add-habit-form">
@@ -596,49 +641,6 @@
                     <button class="btn-add" onclick="addNewHabit()">Add Habit</button>
                 </div>
             </div>
-            
-            <div style="overflow-x: auto;">
-                <table class="habits-table" id="habitsTable">
-                    <thead>
-                        <tr>
-                            <th>Levers</th>
-                            <th style="width: 400px;">Financial Habits</th>
-                            <th>M1</th>
-                            <th>M2</th>
-                            <th>M3</th>
-                            <th>M4</th>
-                            <th>M5</th>
-                            <th>M6</th>
-                            <th>M7</th>
-                            <th>M8</th>
-                            <th>M9</th>
-                            <th>M10</th>
-                            <th>M11</th>
-                            <th>M12</th>
-                        </tr>
-                    </thead>
-                    <tbody id="habitsTableBody">
-                    </tbody>
-                    <tfoot>
-                        <tr class="score-row">
-                            <td class="lever-cell">Score</td>
-                            <td><strong>Your Financial Habits Score</strong></td>
-                            <td class="score-cell" id="score-m1">0</td>
-                            <td class="score-cell" id="score-m2">0</td>
-                            <td class="score-cell" id="score-m3">0</td>
-                            <td class="score-cell" id="score-m4">0</td>
-                            <td class="score-cell" id="score-m5">0</td>
-                            <td class="score-cell" id="score-m6">0</td>
-                            <td class="score-cell" id="score-m7">0</td>
-                            <td class="score-cell" id="score-m8">0</td>
-                            <td class="score-cell" id="score-m9">0</td>
-                            <td class="score-cell" id="score-m10">0</td>
-                            <td class="score-cell" id="score-m11">0</td>
-                            <td class="score-cell" id="score-m12">0</td>
-                        </tr>
-                    </tfoot>
-                </table>
-            </div>
 
             <div class="controls">
                 <button class="btn-control btn-save" onclick="saveChanges()">Save Changes</button>
@@ -647,7 +649,6 @@
         </div>
     </div>
 
-    <!-- Edit Habit Modal -->
     <div id="editModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -676,7 +677,6 @@
         </div>
     </div>
 
-    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
@@ -711,7 +711,6 @@
             appId: "1:429740001233:web:c40f4fc47d0c2952d982f0",
             measurementId: "G-FS0V4DP7F0"
         };
-
         // Initialize Firebase (check if config is set)
         let firebaseInitialized = false;
         let db = null;
@@ -752,11 +751,9 @@
             { lever: "Cut unwanted expenses", habit: "Invest only via direct MF plans" },
             { lever: "Cut unwanted expenses", habit: "Pay credit card bill in full" }
         ];
-
         // Initialize on page load
         window.onload = function() {
             checkLocalStorageSession();
-
             // Close dropdowns when clicking outside
             document.addEventListener('click', function(event) {
                 if (!event.target.closest('.habit-menu')) {
@@ -998,7 +995,6 @@
         // Save edited habit
         async function saveEditedHabit() {
             if (editingHabitIndex === -1) return;
-
             const newLever = document.getElementById('editLever').value;
             const newHabit = document.getElementById('editHabit').value.trim();
 
@@ -1009,7 +1005,6 @@
 
             userHabits[editingHabitIndex].lever = newLever;
             userHabits[editingHabitIndex].habit = newHabit;
-
             await saveHabitsToFirestore();
             saveHabitsToLocalStorage();
             renderHabitsTable();
@@ -1020,7 +1015,6 @@
         // Delete habit
         async function deleteHabit(index) {
             closeAllDropdowns();
-            
             if (confirm('Are you sure you want to delete this habit? This will remove all progress for this habit.')) {
                 userHabits.splice(index, 1);
                 await saveHabitsToFirestore();
@@ -1046,7 +1040,6 @@
                 habit: habit,
                 months: new Array(12).fill(false)
             };
-
             userHabits.push(newHabit);
             
             await saveHabitsToFirestore();
@@ -1082,16 +1075,13 @@
         // Calculate scores with dynamic total
         function calculateScores() {
             const totalHabits = userHabits.length;
-            
             for (let month = 0; month < 12; month++) {
                 let checkedCount = 0;
-                
                 userHabits.forEach(habit => {
                     if (habit.months[month]) {
                         checkedCount++;
                     }
                 });
-                
                 const score = totalHabits > 0 ? Math.round((checkedCount / totalHabits) * 100) : 0;
                 const scoreCell = document.getElementById(`score-m${month + 1}`);
                 scoreCell.textContent = score;
@@ -1151,7 +1141,6 @@
         // Close modal when clicking outside
         window.onclick = function(event) {
             const editModal = document.getElementById('editModal');
-            
             if (event.target === editModal) {
                 closeEditModal();
             }
