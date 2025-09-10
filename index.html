@@ -18,7 +18,7 @@
     .container {
       background: white; border-radius: 15px; box-shadow: 0 20px 40px rgba(0,0,0,0.3);
       overflow: hidden;
-      max-width: 2200px; /* wider page so rows fit a single line */
+      max-width: 2200px;   /* wider page so rows fit a single line */
       width: 98vw;
       margin: 20px;
       position: relative;
@@ -147,8 +147,8 @@
     .scorecard h2 { font-size: 0.9em; margin-bottom: 5px; color: #333; }
     .scorecard .score { font-size: 1.5em; font-weight: bold; display: inline-block; padding: 5px 10px; border-radius: 5px; }
 
-    /* ==== NEW: make all month columns exactly the same width ==== */
-    .month-col { width: 90px; }  /* applied to every month th and td */
+    /* All month columns same width */
+    .month-col { width: 90px; }
     .month-input {
       background: transparent; border: none; color: #fff; text-align: center;
       width: 100%; padding: 0; margin: 0; height: auto; line-height: 1;
@@ -388,14 +388,30 @@
       });
     }
 
-    /* Helper: get the last month index in the table that is <= today */
-    function getLastPastMonthIndex(today) {
+    /* Helper: get the last month index in the table that is <= a target date */
+    function getLastPastMonthIndex(targetDate) {
       let idx = -1;
       for (let i = 0; i < months.length; i++) {
         const d = parseMonthLabel(months[i]);
-        if (d && d <= today) idx = i;
+        if (d && d <= targetDate) idx = i;
       }
       return idx;
+    }
+
+    /* New: get the "last month" (previous month) index relative to today */
+    function getPrevMonthIndex() {
+      const today = new Date();
+      const prev = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+      const label = formatMonthLabel(prev);
+      let idx = months.indexOf(label);
+      if (idx !== -1) return idx;
+
+      // fallback to the latest month <= prev (if labels don't match exactly)
+      idx = getLastPastMonthIndex(prev);
+      if (idx !== -1) return idx;
+
+      // if all months are in the future, show the first month
+      return 0;
     }
     /* ----------------------------------------------------------- */
 
@@ -548,12 +564,6 @@
       }
     }
 
-    /* Dynamic current month index based on labels */
-    function getCurrentMonthIndex() {
-      const nowLabel = formatMonthLabel(new Date());
-      return months.indexOf(nowLabel);
-    }
-
     function calculateScores() {
       const totalHabits = userHabits.length;
 
@@ -578,9 +588,8 @@
         scoreCell.classList.add(cls);
       }
 
-      // Choose the most recent month in the table that is <= today.
-      let cardIndex = getLastPastMonthIndex(new Date());
-      if (cardIndex === -1) cardIndex = 0; // if all months are in future, fall back to first
+      // NEW: show the previous month’s score (relative to today)
+      let cardIndex = getPrevMonthIndex();
 
       const currentScoreElem = document.getElementById(`score-m${cardIndex + 1}`);
       const currentScore = currentScoreElem.textContent;
