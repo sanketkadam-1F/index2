@@ -66,6 +66,7 @@
 
     .habits-table {
       width: 100%; border-collapse: collapse; margin-bottom: 20px; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      table-layout: fixed; /* >>> forces consistent column widths */
     }
     .habits-table th {
       background: #2c2c2c; color: white; padding: 15px 10px; text-align: center; font-weight: 600; font-size: 1em;
@@ -145,7 +146,7 @@
     .scorecard h2 { font-size: 0.9em; margin-bottom: 5px; color: #333; }
     .scorecard .score { font-size: 1.5em; font-weight: bold; display: inline-block; padding: 5px 10px; border-radius: 5px; }
 
-    /* ==== FIX: keep the first (editable) month identical and stable ==== */
+    /* Keep the first (editable) month identical and stable */
     .month-col { width: 90px; min-width: 90px; }  /* same width at any zoom */
     th.month-col, td.month-col { padding: 15px 10px; }
     .month-input{
@@ -158,6 +159,11 @@
     }
     .month-input:hover { border-color: rgba(255,255,255,.25); background: rgba(255,255,255,.06); }
     .month-input:focus { outline:none; border-color: rgba(255,255,255,.35); background: rgba(255,255,255,.10); }
+
+    /* Column width map for strict alignment */
+    .col-lever  { width: 100px; }
+    .col-habits { width: 400px; }
+    .col-month  { width: 90px; }
 
     @media (max-width: 768px) {
       html { font-size: 14px; }
@@ -216,13 +222,22 @@
 
       <div style="overflow-x: auto;">
         <table class="habits-table" id="habitsTable">
+          <!-- >>> Strict column widths so rows align perfectly -->
+          <colgroup>
+            <col class="col-lever">
+            <col class="col-habits">
+            <col class="col-month"><col class="col-month"><col class="col-month"><col class="col-month">
+            <col class="col-month"><col class="col-month"><col class="col-month"><col class="col-month">
+            <col class="col-month"><col class="col-month"><col class="col-month"><col class="col-month">
+          </colgroup>
+
           <thead>
             <tr>
               <th>Levers</th>
               <!-- LEFT aligned header -->
-              <th class="habits-header" style="width: 400px;">Financial Habits</th>
+              <th class="habits-header">Financial Habits</th>
 
-              <!-- First month: editable but visually identical to others -->
+              <!-- First month: editable but visually identical -->
               <th id="month-1-th" class="month-col">
                 <input id="firstMonthInput" class="month-input" value="Apr-25" aria-label="First month (e.g., Sep-25 or 2025-09)">
               </th>
@@ -261,7 +276,6 @@
         </table>
       </div>
 
-      <!-- RESTORED bottom part -->
       <div class="add-habit-section">
         <h4 style="margin-bottom: 15px; color: #333; font-size: 1.2em;">Add New Financial Habit</h4>
         <div class="add-habit-form">
@@ -334,7 +348,7 @@
       { lever: "Cut unwanted expenses", habit: "Maintain zero personal/CC loans" },
       { lever: "Cut unwanted expenses", habit: "Eat home-cooked food 6 days/week" },
       { lever: "Cut unwanted expenses", habit: "Pay credit card bill in full" },
-      { lever: "Others", habit: "Invest only via direct MF plans" }
+      { lever: "Cut unwanted expenses", habit: "Invest only via direct MF plans" }
     ];
 
     /* ---------- Months handling (editable first month) ---------- */
@@ -547,6 +561,11 @@
     }
 
     /* Choose previous month (last month) to display on the scorecard */
+    function formatMonthLabel(d) {
+      const MONTH_ABBR = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      return `${MONTH_ABBR[d.getMonth()]}-${String(d.getFullYear()).slice(-2)}`;
+    }
+
     function getPrevMonthIndex() {
       const today = new Date();
       const prev = new Date(today.getFullYear(), today.getMonth() - 1, 1);
