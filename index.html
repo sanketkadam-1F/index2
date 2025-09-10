@@ -34,6 +34,7 @@
             max-width: 1400px;
             width: 95%;
             margin: 20px;
+            position: relative;
         }
 
         .auth-container {
@@ -263,6 +264,18 @@
             color: #666;
         }
 
+        .habit-delete-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.2em;
+            color: #666;
+        }
+
+        .habit-delete-btn:hover {
+            color: red;
+        }
+
         .score-row {
             background: linear-gradient(135deg, #c3b9ea 0%, #a89cd6 100%);
             font-weight: 700;
@@ -302,16 +315,20 @@
             padding: 20px;
             margin-bottom: 20px;
             text-align: center;
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            width: 200px;
         }
 
         .scorecard h2 {
-            font-size: 1.5em;
+            font-size: 1em;
             margin-bottom: 10px;
             color: #333;
         }
 
         .scorecard .score {
-            font-size: 3em;
+            font-size: 2em;
             font-weight: bold;
             display: inline-block;
             padding: 10px 20px;
@@ -320,6 +337,17 @@
 
         @media (max-width: 768px) {
             html { font-size: 14px; }
+            .scorecard {
+                width: 150px;
+                padding: 10px;
+            }
+            .scorecard h2 {
+                font-size: 0.9em;
+            }
+            .scorecard .score {
+                font-size: 1.5em;
+                padding: 5px 10px;
+            }
         }
     </style>
 </head>
@@ -581,6 +609,7 @@
                     habitCell.className = 'habit-cell';
                     habitCell.innerHTML = `
                         <div class="habit-text" contenteditable="true" data-index="${originalIndex}">${habitData.habit}</div>
+                        <button class="habit-delete-btn" onclick="deleteHabit(${originalIndex})">🗑️</button>
                     `;
                     row.appendChild(habitCell);
 
@@ -604,6 +633,13 @@
             });
 
             calculateScores();
+        }
+
+        function deleteHabit(index) {
+            if (confirm('Are you sure you want to delete this habit?')) {
+                userHabits.splice(index, 1);
+                renderHabitsTable();
+            }
         }
 
         function addNewHabit() {
