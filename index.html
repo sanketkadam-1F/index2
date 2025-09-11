@@ -139,9 +139,6 @@
     .credentials-table { font-size: 1em; }
     .habit-checkbox { transform: scale(1.3); }
 
-
-
-
     .scorecard {
       background: #f8f9fa;
       border: 1px solid #e0e0e0; border-radius: 10px; padding: 10px; margin-bottom: 20px;
@@ -192,8 +189,8 @@
     <!-- Auth -->
     <div id="auth-section">
       <div class="header">
-        <h1>Your Financial Habits Tracker</h1>
-        <p>Next 12 Months' Journey</p>
+        <h1>How a Qualified Financial Advisor Will Advise?</h1>
+        <p>Your Next 12 Months Tracker</p>
       </div>
 
       <div class="auth-container">
@@ -217,7 +214,7 @@
     <!-- Dashboard -->
     <div id="dashboard-section" class="dashboard">
       <div class="header">
-        <h1>Your Financial Habits Tracker</h1>
+        <h1>How a Qualified Financial Advisor Will Advise?</h1>
         <p>Your Next 12 Months Tracker</p>
         <div id="scorecard" class="scorecard">
            <h2 id="current-month-header">Current Month's Financial Habit Score</h2>
@@ -355,7 +352,7 @@
       { lever: "Save more", habit: "Keep auto‑debit SIPs between 1st–5th every month" },
       { lever: "Save more", habit: "Maintain SIPs in 5%-15% yearly 'Step-up' mode" },
       { lever: "Earn more", habit: "Spend 10 hrs/month on upskilling" },
-	{ lever: "Earn more", habit: "Read 5 hrs/month to improve my asset allocation" },
+      { lever: "Earn more", habit: "Read 5 hrs/month to improve my asset allocation" },
       { lever: "Earn more", habit: "Spend 1 hr/month on learning to generate more credit card rewards" },
       { lever: "Cut unwanted expenses", habit: "Maintain zero personal/credit card/auto loans" },
       { lever: "Cut unwanted expenses", habit: "Eat home-cooked food 6 days/week" },
@@ -480,7 +477,7 @@
       loadUserHabits();
     }
     
-    // --- Data and UI Rendering (No changes below this line) ---
+    // --- Data and UI Rendering ---
     async function loadUserHabits() {
       if (firebaseInitialized) {
         const doc = await db.collection('users').doc(currentUser.userId).get();
@@ -537,7 +534,7 @@
 
           if (i === 0) {
             const leverCell = document.createElement('td');
-             leverCell.className = 'lever-cell';
+            leverCell.className = 'lever-cell';
             leverCell.textContent = lever;
             leverCell.rowSpan = habits.length;
             row.appendChild(leverCell);
@@ -546,13 +543,13 @@
           const habitCell = document.createElement('td');
           habitCell.className = 'habit-cell';
           habitCell.innerHTML = `
-             <div class="habit-text" contenteditable="true" data-index="${originalIndex}">${habitData.habit}</div>
+            <div class="habit-text" contenteditable="true" data-index="${originalIndex}">${habitData.habit}</div>
             <button class="habit-delete-btn" title="Delete" aria-label="Delete habit" onclick="deleteHabit(${originalIndex})">🗑️</button>
           `;
           row.appendChild(habitCell);
           for (let month = 0; month < 12; month++) {
             const monthCell = document.createElement('td');
-            monthCell.className = 'month-col'; /* uniform column width */
+            monthCell.className = 'month-col';
             const checkbox = document.createElement('input');
             checkbox.type = 'checkbox';
             checkbox.className = 'habit-checkbox';
@@ -575,7 +572,7 @@
     function deleteHabit(index) {
       if (confirm('Are you sure you want to delete this habit?')) {
         userHabits.splice(index, 1);
-        saveChanges(); // Save after deleting
+        saveChanges();
       }
     }
 
