@@ -142,7 +142,9 @@
 	/* --- Seamless horizontal separators across the whole table --- */
 	.habits-table{ border-collapse: separate; border-spacing: 0; } /* was collapse */
 	.habits-table td{ border-bottom: 0; }                          /* stop per-cell lines */
-	#habitsTableBody tr.group-separator { border-bottom: 1px solid #ddd; }       /* single full-width line */
+	.habits-table tbody tr{ border-bottom: 1px solid #ddd; }       /* single full-width line */
+	.habits-table tbody tr:last-child{ border-bottom: 0; }         /* no line after the last row */
+
 
     .scorecard {
       background: #f8f9fa;
@@ -170,7 +172,276 @@
       height:34px; line-height:34px; /* single line height like text */
       padding:0 4px; margin:0;
       text-align:center; color:#fff; font-weight:600; font-size:1em; letter-spacing:.2px;
-      background:transparent; border:1px solid transparent; borde...(truncated 12314 characters)...'Error connecting to the user database. Please check the console for details and try again later.');
+      background:transparent; border:1px solid transparent; border-radius:6px;
+      -webkit-appearance:none; appearance:none;
+    }
+    .month-input:hover { border-color: rgba(255,255,255,.25); background: rgba(255,255,255,.06); }
+    .month-input:focus { outline:none; border-color: rgba(255,255,255,.35); background: rgba(255,255,255,.10); }
+
+    /* Column width map for strict alignment */
+    .col-lever  { width: 100px; }
+    .col-habits { width: 650px; } /* Increased from 400px */
+    .col-month  { width: 90px; }
+
+    @media (max-width: 768px) {
+      html { font-size: 14px; }
+      .scorecard { width: 120px; padding: 8px; }
+      .scorecard h2 { font-size: 0.8em; }
+      .scorecard .score { font-size: 1.2em; padding: 4px 8px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Auth -->
+    <div id="auth-section">
+      <div class="header">
+        <h1>How a Qualified Financial Advisor Will Advise?</h1>
+        <p>Your Next 12 Months Tracker</p>
+      </div>
+
+      <div class="auth-container">
+        <div id="message-area"></div>
+        <div id="login-form" class="auth-form">
+          <h2 style="text-align: center; margin-bottom: 30px; color: #333;">Login to Your Account</h2>
+
+          <div class="form-group">
+            <label for="loginUserId">User ID</label>
+            <input type="text" id="loginUserId" placeholder="Enter your User ID" required>
+          </div>
+          <div class="form-group">
+            <label for="loginPassword">Password</label>
+            <input type="password" id="loginPassword" placeholder="Enter your password" required>
+          </div>
+          <button class="btn btn-primary" id="loginBtn" onclick="doLogin()">Login</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dashboard -->
+    <div id="dashboard-section" class="dashboard">
+      <div class="header">
+        <h1>How a Qualified Financial Advisor Will Advise?</h1>
+        <p>Your Next 12 Months Tracker</p>
+        <div id="scorecard" class="scorecard">
+           <h2 id="current-month-header">Current Month's Financial Habit Score</h2>
+          <div id="current-score" class="score">0</div>
+        </div>
+      </div>
+
+      <div class="dashboard-header">
+        <div class="user-info">
+          <h3>Welcome, <span id="userName"></span></h3>
+        </div>
+        <button class="logout-btn" onclick="logout()">Logout</button>
+      </div>
+
+      <div id="dashboard-message"></div>
+
+       <div style="overflow-x: auto;">
+        <table class="habits-table" id="habitsTable">
+          <!-- >>> Strict column widths so rows align perfectly -->
+          <colgroup>
+            <col class="col-lever">
+            <col class="col-habits">
+            <col class="col-month"><col class="col-month"><col class="col-month"><col class="col-month">
+            <col class="col-month"><col class="col-month"><col class="col-month"><col class="col-month">
+            <col class="col-month"><col class="col-month"><col class="col-month"><col class="col-month">
+          </colgroup>
+
+          <thead>
+            <tr>
+              <th>Levers</th>
+              <!-- LEFT aligned header -->
+              <th class="habits-header">Financial Habits</th>
+
+               <!-- First month: editable but visually identical -->
+              <th id="month-1-th" class="month-col">
+                <input id="firstMonthInput" class="month-input" value="Apr-25" aria-label="First month (e.g., Sep-25 or 2025-09)">
+              </th>
+              <!-- Other months -->
+             <th class="month-col"><span id="month-2">May-25</span></th>
+              <th class="month-col"><span id="month-3">Jun-25</span></th>
+              <th class="month-col"><span id="month-4">Jul-25</span></th>
+              <th class="month-col"><span id="month-5">Aug-25</span></th>
+              <th class="month-col"><span id="month-6">Sep-25</span></th>
+              <th class="month-col"><span id="month-7">Oct-25</span></th>
+               <th class="month-col"><span id="month-8">Nov-25</span></th>
+              <th class="month-col"><span id="month-9">Dec-25</span></th>
+              <th class="month-col"><span id="month-10">Jan-26</span></th>
+              <th class="month-col"><span id="month-11">Feb-26</span></th>
+              <th class="month-col"><span id="month-12">Mar-26</span></th>
+            </tr>
+          </thead>
+
+          <!-- Score row -->
+          <tbody>
+            <tr class="score-row">
+              <td class="lever-cell">Score</td>
+              <td class="score-label-cell"><strong>Your Financial Habits Score</strong></td>
+
+              <td class="score-cell month-col" id="score-m1">0</td><td class="score-cell month-col" id="score-m2">0</td>
+              <td class="score-cell month-col" id="score-m3">0</td><td class="score-cell month-col" id="score-m4">0</td>
+               <td class="score-cell month-col" id="score-m5">0</td><td class="score-cell month-col" id="score-m6">0</td>
+              <td class="score-cell month-col" id="score-m7">0</td><td class="score-cell month-col" id="score-m8">0</td>
+              <td class="score-cell month-col" id="score-m9">0</td><td class="score-cell month-col" id="score-m10">0</td>
+              <td class="score-cell month-col" id="score-m11">0</td><td class="score-cell month-col" id="score-m12">0</td>
+            </tr>
+           </tbody>
+
+          <!-- Habits -->
+          <tbody id="habitsTableBody"></tbody>
+        </table>
+      </div>
+
+      <div class="add-habit-section">
+        <h4 style="margin-bottom: 15px; color: #333; font-size: 1.2em;">Add New Financial Habit</h4>
+        <div class="add-habit-form">
+          <div class="form-group">
+            <label for="newLever">Lever Category</label>
+            <select id="newLever">
+              <option value="Keep risk in check">Keep risk in check</option>
+              <option value="Save more">Save more</option>
+               <option value="Earn more">Earn more</option>
+              <option value="Cut unwanted expenses">Cut unwanted expenses</option>
+              <option value="Others">Others</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="newHabit">Habit Description</label>
+             <input type="text" id="newHabit" placeholder="Enter new financial habit..." maxlength="150">
+          </div>
+          <button class="btn-add" onclick="addNewHabit()">Add Habit</button>
+        </div>
+      </div>
+
+      <div class="controls" style="display: flex; gap: 15px; margin-top: 20px;">
+        <button class="btn-control btn-save" style="background: #6c757d; color: white;" onclick="saveChanges()">Save Changes</button>
+        <button class="btn-control btn-reset" style="background: #666; color: white;" onclick="resetToDefaults()">Reset to Defaults</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
+  <script>
+    // --- Google Sheets Integration ---
+    const GOOGLE_SHEET_ID = '1bzJIZbT6OJ1U6HaMxvk1nXDYZzyroP3zLDluBgTnYHw';
+    const GOOGLE_API_KEY = 'AIzaSyCWvIFxQeUkmzJ8AXWhxC9mg3HIYBzvI6o';
+    const SHEET_NAME = 'Sheet1';
+    const SHEET_RANGE = 'A:C';
+    let usersFromSheet = {}; // Cache for user data
+
+    // --- Firebase Configuration ---
+    const firebaseConfig = {
+      apiKey: "AIzaSyCRnNkMDtn2LGFY_kd2lTnSWl4ZjUluWrQ",
+      authDomain: "financial-habits-tracker.firebaseapp.com",
+      projectId: "financial-habits-tracker",
+    };
+    let firebaseInitialized = false, db = null;
+    try {
+      if (firebaseConfig.apiKey && firebaseConfig.apiKey !== "your-api-key") {
+        firebase.initializeApp(firebaseConfig);
+        db = firebase.firestore();
+        firebaseInitialized = true;
+      }
+    } catch (error) { console.error("Firebase init failed:", error); }
+
+    let currentUser = null;
+    let userHabits = [];
+    const defaultHabits = [
+      { lever: "Keep risk in check", habit: "Maintain 6 months of emergency funds" },
+      { lever: "Keep risk in check", habit: "Hold term cover of 5x-10x annual income" },
+      { lever: "Keep risk in check", habit: "Cover entire family in health insurance policy" },
+      { lever: "Save more", habit: "Invest 20%-30% of monthly gross income" },
+      { lever: "Save more", habit: "Keep auto-debit SIPs b/w 1st-5th every month" },
+      { lever: "Save more", habit: "Maintain SIPs in 5%-15% yearly 'Step-up' mode" },
+      { lever: "Earn more", habit: "Spend 10 hrs/month on marketable upskilling" },
+      { lever: "Earn more", habit: "Read 1 hour/week on importance of asset allocation" },
+      { lever: "Cut unwanted expenses", habit: "Maintain zero personal/CC loans" },
+      { lever: "Cut unwanted expenses", habit: "Eat home-cooked food 6 days/week" },
+      { lever: "Cut unwanted expenses", habit: "Pay credit card bill in full" },
+      { lever: "Cut unwanted expenses", habit: "Invest only via direct MF plans" } 
+    ];
+    
+    // --- Months handling (editable first month) ---
+    const MONTH_ABBR = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    let months = [
+      'Apr-25','May-25','Jun-25','Jul-25','Aug-25','Sep-25','Oct-25','Nov-25','Dec-25','Jan-26','Feb-26','Mar-26'
+    ];
+    function formatMonthLabel(d) {
+      const m = MONTH_ABBR[d.getMonth()];
+      const yy = String(d.getFullYear()).slice(-2);
+      return `${m}-${yy}`;
+    }
+
+    function parseMonthLabel(s) {
+      const v = (s || '').trim(); // Accept 'YYYY-MM'
+      let m; if (/^\d{4}-\d{2}$/.test(v)) {
+        const [y, mm] = v.split('-').map(Number); return new Date(y, mm - 1, 1);
+      }
+      // Accept 'Mon-YY' (e.g., Sep-25)
+      m = v.match(/^([A-Za-z]{3})[-\s]?(\d{2})$/); if (m) {
+        const mon = MONTH_ABBR.findIndex(x => x.toLowerCase() === m[1].toLowerCase()); if (mon >= 0) return new Date(2000 + Number(m[2]), mon, 1);
+      }
+      return null;
+    }
+
+    function setMonthsFromStart(startDate) {
+      for (let i = 0; i < 12; i++) {
+        const d = new Date(startDate.getFullYear(), startDate.getMonth() + i, 1);
+        months[i] = formatMonthLabel(d);
+        if (i === 0) {
+          document.getElementById('firstMonthInput').value = months[0];
+        } else {
+          const el = document.getElementById(`month-${i+1}`); if (el) el.textContent = months[i];
+        }
+      }
+      calculateScores();
+    }
+
+    function wireMonthInput() {
+      const inp = document.getElementById('firstMonthInput');
+      if (!inp) return; inp.addEventListener('change', () => {
+        const d = parseMonthLabel(inp.value);
+        if (!d) {
+          alert('Please enter month like "Sep-25" or "2025-09".');
+          inp.value = months[0];
+          return;
+        }
+        setMonthsFromStart(d);
+      });
+    }
+
+    // --- Authentication ---
+    async function fetchUsersFromSheet() {
+      const url = `https://sheets.googleapis.com/v4/spreadsheets/${GOOGLE_SHEET_ID}/values/${SHEET_NAME}!${SHEET_RANGE}?key=${GOOGLE_API_KEY}`;
+      try {
+        const response = await fetch(url);
+        if (!response.ok) {
+            const errorData = await response.json();
+            console.error('Google Sheets API Error:', errorData);
+            throw new Error(`Network response was not ok (${response.status})`);
+        }
+        const data = await response.json();
+        const users = {};
+        if (data.values) {
+            // Assuming data rows have the format [User Name, User ID, Password]
+            for (const row of data.values) {
+                const userName = row[0] || '';
+                const userId = row[1] || '';
+                const password = row[2] || '';
+                if (userId) { // Check if userId exists
+                    users[userId] = { userId: userId, password: password, userName: userName || userId };
+                }
+            }
+        }
+        return users;
+      } catch (error) {
+        console.error('Failed to fetch user data from Google Sheets:', error);
+        alert('Error connecting to the user database. Please check the console for details and try again later.');
         return null;
       }
     }
@@ -259,7 +530,7 @@
         return acc;
       }, {});
       let habitIndexCounter = -1;
-      leverOrder.forEach((lever, leverIdx) => {
+      leverOrder.forEach(lever => {
         const habits = habitsByLever[lever];
         if (!habits) return;
 
@@ -295,10 +566,6 @@
             };
             monthCell.appendChild(checkbox);
             row.appendChild(monthCell);
-          }
-
-          if (i === habits.length - 1 && leverIdx < leverOrder.length - 1) {
-            row.classList.add('group-separator');
           }
 
           tableBody.appendChild(row);
@@ -400,3 +667,4 @@
   </script>
 </body>
 </html>
+
