@@ -139,6 +139,11 @@
     .credentials-table { font-size: 1em; }
     .habit-checkbox { transform: scale(1.3); }
 
+    /* --- Separator line between lever groups --- */
+    .lever-separator {
+        border-top: 2px solid #e0e0e0; /* A slightly thicker, light grey line */
+    }
+
 	/* --- Seamless horizontal separators across the whole table --- */
 	.habits-table{ border-collapse: separate; border-spacing: 0; } /* was collapse */
 	.habits-table td{ border-bottom: 0; }                          /* stop per-cell lines */
@@ -363,7 +368,7 @@
       { lever: "Cut unwanted expenses", habit: "Maintain zero personal/CC loans" },
       { lever: "Cut unwanted expenses", habit: "Eat home-cooked food 6 days/week" },
       { lever: "Cut unwanted expenses", habit: "Pay credit card bill in full" },
-      { lever: "Cut unwanted expenses", habit: "Invest only via direct MF plans" } 
+      { lever: "Others", habit: "Invest only via direct MF plans" }
     ];
     
     // --- Months handling (editable first month) ---
@@ -529,7 +534,8 @@
         acc[habit.lever].push(habit);
         return acc;
       }, {});
-      let habitIndexCounter = -1;
+      
+      let firstLeverGroupRendered = false;
       leverOrder.forEach(lever => {
         const habits = habitsByLever[lever];
         if (!habits) return;
@@ -537,6 +543,10 @@
         habits.forEach((habitData, i) => {
           const originalIndex = userHabits.findIndex(h => h.id === habitData.id);
           const row = document.createElement('tr');
+
+          if (i === 0 && firstLeverGroupRendered) {
+              row.classList.add('lever-separator');
+          }
 
           if (i === 0) {
             const leverCell = document.createElement('td');
@@ -570,6 +580,10 @@
 
           tableBody.appendChild(row);
         });
+        
+        if (habits.length > 0) {
+            firstLeverGroupRendered = true;
+        }
       });
 
       calculateScores();
@@ -589,7 +603,7 @@
       userHabits.push({
         id: Date.now(),
         lever: lever,
-        habit: habitText,
+        habit: text,
         months: new Array(12).fill(false)
       });
       saveChanges();
@@ -667,4 +681,15 @@
   </script>
 </body>
 </html>
+```
 
+---
+
+The code has a bug in the addNewHabit function.
+```
+userHabits.push({
+    id: Date.now(),
+    lever: lever,
+    habit: text,
+    months: new Array(12).fill(false)
+});
