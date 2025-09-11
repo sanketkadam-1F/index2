@@ -193,6 +193,7 @@
 </head>
 <body>
   <div class="container">
+    <!-- Auth -->
     <div id="auth-section">
       <div class="header">
         <h1>How a Qualified Financial Advisor Will Advise?</h1>
@@ -217,6 +218,7 @@
       </div>
     </div>
 
+    <!-- Dashboard -->
     <div id="dashboard-section" class="dashboard">
       <div class="header">
         <h1>How a Qualified Financial Advisor Will Advise?</h1>
@@ -238,6 +240,7 @@
 
        <div style="overflow-x: auto;">
         <table class="habits-table" id="habitsTable">
+          <!-- >>> Strict column widths so rows align perfectly -->
           <colgroup>
             <col class="col-lever">
             <col class="col-habits">
@@ -249,12 +252,15 @@
           <thead>
             <tr>
               <th>Levers</th>
+              <!-- LEFT aligned header -->
               <th class="habits-header">Financial Habits</th>
 
-               <th id="month-1-th" class="month-col">
+               <!-- First month: editable but visually identical -->
+              <th id="month-1-th" class="month-col">
                 <input id="firstMonthInput" class="month-input" value="Apr-25" aria-label="First month (e.g., Sep-25 or 2025-09)">
               </th>
-              <th class="month-col"><span id="month-2">May-25</span></th>
+              <!-- Other months -->
+             <th class="month-col"><span id="month-2">May-25</span></th>
               <th class="month-col"><span id="month-3">Jun-25</span></th>
               <th class="month-col"><span id="month-4">Jul-25</span></th>
               <th class="month-col"><span id="month-5">Aug-25</span></th>
@@ -268,6 +274,7 @@
             </tr>
           </thead>
 
+          <!-- Score row -->
           <tbody>
             <tr class="score-row">
               <td class="lever-cell">Score</td>
@@ -282,6 +289,7 @@
             </tr>
            </tbody>
 
+          <!-- Habits -->
           <tbody id="habitsTableBody"></tbody>
         </table>
       </div>
@@ -314,33 +322,35 @@
     </div>
   </div>
 
+  <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 
   <script>
-    // PREDEFINED USERS
-    const PREDEFINED_USERS = {
-      'SanketK': { userId: 'SanketK', password: 'Sak123', userName: 'Sanket Kadam' },
-      'SakyK':   { userId: 'SakyK',   password: 'Syk123', userName: 'Saky Kady' },
-      'ChickuT': { userId: 'ChickuT', password: 'C123',   userName: 'Chicku test' },
-      'AnimeH':  { userId: 'AnimeH',  password: '1F@123', userName: 'Animesh Hardia' }
-    };
+    // --- Google Sheets Integration ---
+    const GOOGLE_SHEET_ID = '1bzJIZbT6OJ1U6HaMxvk1nXDYZzyroP3zLDluBgTnYHw';
+    const GOOGLE_API_KEY = 'AIzaSyCWvIFxQeUkmzJ8AXWhxC9mg3HIYBzvI6o';
+    const SHEET_NAME = 'Sheet1';
+    const SHEET_RANGE = 'A:C';
+    let usersFromSheet = {}; // Cache for user data
 
-    // Firebase Configuration (unchanged)
+    // --- Firebase Configuration ---
     const firebaseConfig = {
       apiKey: "AIzaSyCRnNkMDtn2LGFY_kd2lTnSWl4ZjUluWrQ",
       authDomain: "financial-habits-tracker.firebaseapp.com",
       projectId: "financial-habits-tracker",
     };
-    let firebaseInitialized = false, db = null; try {
-      if (firebaseConfig.apiKey !== "your-api-key") {
-        firebase.initializeApp(firebaseConfig); db = firebase.firestore();
+    let firebaseInitialized = false, db = null;
+    try {
+      if (firebaseConfig.apiKey && firebaseConfig.apiKey !== "your-api-key") {
+        firebase.initializeApp(firebaseConfig);
+        db = firebase.firestore();
         firebaseInitialized = true;
       }
     } catch (error) { console.error("Firebase init failed:", error); }
 
     let currentUser = null;
-    let userHabits = []; // Default habits (unchanged)
+    let userHabits = [];
     const defaultHabits = [
       { lever: "Keep risk in check", habit: "Maintain 6 months of emergency funds" },
       { lever: "Keep risk in check", habit: "Hold term cover of 5x-10x annual income" },
@@ -353,9 +363,10 @@
       { lever: "Cut unwanted expenses", habit: "Maintain zero personal/CC loans" },
       { lever: "Cut unwanted expenses", habit: "Eat home-cooked food 6 days/week" },
       { lever: "Cut unwanted expenses", habit: "Pay credit card bill in full" },
-      { lever: "Cut unwanted expenses", habit: "Invest only via direct MF plans" }
+      { lever: "Others", habit: "Invest only via direct MF plans" }
     ];
-    /* ---------- Months handling (editable first month) ---------- */
+    
+    // --- Months handling (editable first month) ---
     const MONTH_ABBR = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
     let months = [
       'Apr-25','May-25','Jun-25','Jul-25','Aug-25','Sep-25','Oct-25','Nov-25','Dec-25','Jan-26','Feb-26','Mar-26'
@@ -388,7 +399,6 @@
           const el = document.getElementById(`month-${i+1}`); if (el) el.textContent = months[i];
         }
       }
-      // Update dependent UI
       calculateScores();
     }
 
@@ -404,21 +414,56 @@
         setMonthsFromStart(d);
       });
     }
-    /* ----------------------------------------------------------- */
 
-    window.onload = () => {
-      const savedUserId = localStorage.getItem('currentUserId');
+    // --- Authentication ---
+    async function fetchUsersFromSheet() {
+      const url = `https://sheets.googleapis.com/v4/spreadsheets/${GOOGLE_SHEET_ID}/values/${SHEET_NAME}!${SHEET_RANGE}?key=${GOOGLE_API_KEY}`;
+      try {
+        const response = await fetch(url);
+        if (!response.ok) {
+            const errorData = await response.json();
+            console.error('Google Sheets API Error:', errorData);
+            throw new Error(`Network response was not ok (${response.status})`);
+        }
+        const data = await response.json();
+        const users = {};
+        if (data.values) {
+            // Assuming data rows start from index 0 and have format [userId, password, userName]
+            for (const row of data.values) {
+                if (row[0]) { // Check if userId exists
+                    users[row[0]] = { userId: row[0], password: row[1] || '', userName: row[2] || row[0] };
+                }
+            }
+        }
+        return users;
+      } catch (error) {
+        console.error('Failed to fetch user data from Google Sheets:', error);
+        alert('Error connecting to the user database. Please check the console for details and try again later.');
+        return null;
+      }
+    }
+
+    window.onload = async () => {
       wireMonthInput();
-      if (savedUserId && PREDEFINED_USERS[savedUserId]) {
-        currentUser = PREDEFINED_USERS[savedUserId];
+      usersFromSheet = await fetchUsersFromSheet() || {};
+      const savedUserId = localStorage.getItem('currentUserId');
+
+      if (savedUserId && usersFromSheet[savedUserId]) {
+        currentUser = usersFromSheet[savedUserId];
         showDashboard();
       }
     };
 
-    function doLogin() {
+    async function doLogin() {
+      // If users haven't been fetched yet (e.g., on first load error), try again.
+      if (Object.keys(usersFromSheet).length === 0) {
+          usersFromSheet = await fetchUsersFromSheet() || {};
+          if (!usersFromSheet) return; // Exit if fetch failed
+      }
       const userId = document.getElementById('loginUserId').value.trim();
       const password = document.getElementById('loginPassword').value;
-      const user = PREDEFINED_USERS[userId];
+      const user = usersFromSheet[userId];
+
       if (user && user.password === password) {
         currentUser = user;
         localStorage.setItem('currentUserId', userId);
@@ -434,11 +479,12 @@
       document.getElementById('userName').textContent = currentUser.userName;
       loadUserHabits();
     }
-
+    
+    // --- Data and UI Rendering (No changes below this line) ---
     async function loadUserHabits() {
       if (firebaseInitialized) {
         const doc = await db.collection('users').doc(currentUser.userId).get();
-        userHabits = doc.exists ? doc.data().habits : initializeDefaultHabits();
+        userHabits = doc.exists && doc.data().habits ? doc.data().habits : initializeDefaultHabits();
       } else {
         const stored = localStorage.getItem(`habits_${currentUser.userId}`);
         userHabits = stored ? JSON.parse(stored) : initializeDefaultHabits();
@@ -458,7 +504,9 @@
     async function saveChanges() {
       document.querySelectorAll('.habit-text').forEach(div => {
         const index = parseInt(div.dataset.index, 10);
-        userHabits[index].habit = div.textContent;
+        if (userHabits[index]) {
+            userHabits[index].habit = div.textContent;
+        }
       });
       if (firebaseInitialized) {
         await db.collection('users').doc(currentUser.userId).set({ habits: userHabits });
@@ -478,6 +526,7 @@
         acc[habit.lever].push(habit);
         return acc;
       }, {});
+      let habitIndexCounter = -1;
       leverOrder.forEach(lever => {
         const habits = habitsByLever[lever];
         if (!habits) return;
@@ -526,7 +575,7 @@
     function deleteHabit(index) {
       if (confirm('Are you sure you want to delete this habit?')) {
         userHabits.splice(index, 1);
-        renderHabitsTable();
+        saveChanges(); // Save after deleting
       }
     }
 
@@ -545,16 +594,10 @@
     }
 
     async function resetToDefaults() {
-      if (confirm('Are you sure you want to reset all habits to defaults?')) {
+      if (confirm('Are you sure you want to reset all habits to defaults? This will erase current habits.')) {
         userHabits = initializeDefaultHabits();
         await saveChanges();
       }
-    }
-
-    /* Choose previous month (last month) to display on the scorecard */
-    function formatMonthLabel(d) {
-      const MONTH_ABBR = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-      return `${MONTH_ABBR[d.getMonth()]}-${String(d.getFullYear()).slice(-2)}`;
     }
 
     function getPrevMonthIndex() {
@@ -564,13 +607,12 @@
       let idx = months.indexOf(label);
       if (idx !== -1) return idx;
 
-      // fallback: latest month in table that is <= previous month
       idx = -1;
       for (let i = 0; i < months.length; i++) {
         const d = parseMonthLabel(months[i]);
         if (d && d <= prev) idx = i;
       }
-      return idx === -1 ? 0 : idx; // if all future, pick first
+      return idx === -1 ? 0 : idx;
     }
 
     function calculateScores() {
@@ -581,12 +623,10 @@
         const scoreCell = document.getElementById(`score-m${month + 1}`);
         scoreCell.textContent = score;
 
-        // Reset classes
         scoreCell.className = 'score-cell month-col';
         const bands = ['score-base-grey','score-dark-red','score-light-red','score-yellow','score-light-green','score-dark-green'];
         bands.forEach(b => scoreCell.classList.remove(b));
 
-        // 0 -> base grey; otherwise 5-band thresholds
         let cls = 'score-dark-red';
         if (score === 0) cls = 'score-base-grey';
         else if (score > 90) cls = 'score-dark-green';
@@ -596,7 +636,6 @@
         scoreCell.classList.add(cls);
       }
 
-      // Scorecard shows LAST month’s score
       let cardIndex = getPrevMonthIndex();
       const currentScoreElem = document.getElementById(`score-m${cardIndex + 1}`);
       const currentScore = currentScoreElem.textContent;
