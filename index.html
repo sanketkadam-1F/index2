@@ -27,404 +27,615 @@
     .auth-container { max-width: 400px; padding: 40px; }
 
     .header {
-      text-align: center; margin-bottom: 20px;
+      text-align: center; padding: 30px;
+      background: linear-gradient(135deg, #2c2c2c 0%, #1a1a1a 100%);
+      color: white; position: relative;
     }
+    .header h1 { font-size: 2.4em; margin-bottom: 10px; }
+    .header p { font-size: 1.2em; opacity: 0.9; }
 
-    .input-group { margin-bottom: 15px; }
-    .input-group label { display: block; margin-bottom: 5px; }
-    .input-group input {
-      width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc;
+    .auth-form { padding: 20px 0; }
+    .form-group { margin-bottom: 20px; }
+    .form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: #333; font-size: 1.1em; }
+    .form-group input {
+      width: 100%; padding: 12px 15px;
+      border: 2px solid #e0e0e0; border-radius: 8px; font-size: 1em;
     }
+    .form-group input:focus { outline: none; border-color: #c3b9ea; }
 
     .btn {
-      width: 100%; padding: 10px; border-radius: 5px; border: none;
-      background-color: #007bff; color: white; cursor: pointer;
+      width: 100%; padding: 15px; border: none; border-radius: 8px;
+      font-size: 1.1em; font-weight: 600;
+      cursor: pointer; transition: all 0.3s; margin-bottom: 15px;
     }
-    .btn:hover { background-color: #0056b3; }
+    .btn-primary { background: #6c757d; color: white; }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(108,117,125,0.3); }
 
-    .switch-auth {
-      text-align: center; margin-top: 15px;
-    }
-    .switch-auth button {
-      background: none; border: none; color: #007bff; cursor: pointer;
-    }
+    .dashboard { padding: 20px; display: none; }
+    .dashboard-header h3 { font-size: 1.5em; }
+    .dashboard-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; }
+    .user-info { flex: 1; }
+    .logout-btn { background: #666; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-size: 1em; }
+    .logout-btn:hover { background: #555; }
 
-    .dashboard { padding: 20px; }
-    .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-    .scorecard { text-align: center; }
-    .score { font-size: 2em; font-weight: bold; }
-    #logout-btn { background-color: #dc3545; }
-
-    .grid-wrapper { overflow-x: auto; }
-    .grid-container {
-      display: grid;
-      grid-template-columns: 2fr repeat(12, 1fr) 1.5fr; /* Levers, 12 months, Score */
-      text-align: center;
+    .add-habit-section {
+      background: #f8f9fa; border: 1px solid #e0e0e0; border-radius: 10px;
+      padding: 20px; margin: 20px 0;
     }
+    .add-habit-form { display: flex; gap: 15px; align-items: end; flex-wrap: wrap; }
+    .add-habit-form .form-group { margin-bottom: 0; flex: 1; min-width: 200px; }
+    .add-habit-form select, .add-habit-form input { padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 1em; }
+    .btn-add { background: #6c757d; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: 600; font-size: 1em; white-space: nowrap; }
 
-    .grid-col {
-      display: flex;
-      flex-direction: column;
+    .habits-table {
+      width: 100%;
+      border-collapse: collapse; margin-bottom: 20px; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      table-layout: fixed; /* forces consistent column widths */
     }
+    .habits-table th {
+      background: #2c2c2c;
+      color: white; padding: 15px 10px; text-align: center; font-weight: 600; font-size: 1em;
+    }
+    /* LEFT align specifically the Financial Habits header */
+    .habits-table th.habits-header { text-align: left; padding-left: 12px; }
 
-    .grid-header > div, .grid-body > div {
-      padding: 15px 10px;
-      border-right: 1px solid #eee;
-      border-bottom: 1px solid #eee;
-      font-weight: bold;
+    .habits-table td {
+      padding: 6px 8px; /* tighter row height */
+      text-align: center; border-bottom: 1px solid #ddd; vertical-align: middle;
     }
-    .grid-header > div:first-child, .grid-body > div:first-child {
-      /* border-left: 1px solid #eee; */
-    }
+    #habitsTableBody tr:nth-child(even) { background-color: #f8f9fa; }
+    #habitsTableBody tr:hover { background-color: #f1f1f1; }
 
-    .levers-col {
-      position: sticky;
-      left: 0;
-      background-color: white;
-      z-index: 2;
-      border-right: 1px solid #eee;
-      border-left: 1px solid #eee;
-    }
-
-    .levers-col > .lever-category:first-child {
-      border-top: 1px solid #eee;
+    /* Levers column same font size as habits */
+    .lever-cell {
+      background: #666;
+      color: white; font-weight: 600; font-size: 1.2em; width: 100px;
     }
 
-    .lever-category, .lever-item {
-      padding: 15.5px 10px;
-      border-bottom: 1px solid #eee;
-      white-space: nowrap;
+    .habit-cell { display: flex; align-items: center; gap: 10px; text-align: left; justify-content: flex-start; }
+    .habit-text {
+      flex: 1; padding: 4px 6px;
+      border: 1px solid transparent; background: transparent; font-size: 1.1em; /* Reduced from 1.2em */
+      line-height: 1.3; /* Adjusted for wrapping */
+      text-align: left;
     }
+    .habit-text:focus { outline: none; border: 1px solid #c3b9ea; background: #f9f9f9; }
 
-    .lever-category {
-      background-color: #f9f9f9;
-      position: sticky;
-      top: 0;
-      z-index: 1;
+    .habit-delete-btn { background: none; border: none; cursor: pointer; font-size: 1.2em; color: #666; position: relative; }
+    .habit-delete-btn:hover { color: red; }
+    .habit-delete-btn::after {
+      content: 'Delete'; position: absolute; bottom: 125%; left: 50%;
+      transform: translateX(-50%);
+      background: #333; color: #fff; padding: 4px 6px; border-radius: 4px; font-size: 0.75em; white-space: nowrap;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.2s;
     }
-
-    .months-grid {
-      display: contents;
+    .habit-delete-btn::before {
+      content: ''; position: absolute; bottom: 115%;
+      left: 50%; transform: translateX(-50%);
+      border: 5px solid transparent; border-top-color: #333; opacity: 0; transition: opacity 0.2s;
     }
+    .habit-delete-btn:hover::after, .habit-delete-btn:hover::before { opacity: 1; }
 
-    .grid-body {
-      display: contents;
+    /* Score row header background (kept) */
+    .score-row { background: linear-gradient(135deg, #c3b9ea 0%, #a89cd6 100%); font-weight: 700; color: white; }
+    .score-row:hover { background: linear-gradient(135deg, #c3b9ea 0%, #a89cd6 100%) !important; }
+
+    /* “Your Financial Habits Score” label cell (grey/black) */
+    .score-label-cell { background-image: none !important; background-color: #e9ecef !important; color: #000 !important; }
+    .score-label-cell strong { color: #000 !important; }
+    .score-row:hover .score-label-cell { background-image: none !important; background-color: #e9ecef !important; color: #000 !important; }
+
+    /* 5-band colors + zero = base grey */
+    .score-cell { font-size: 1.1em; font-weight: bold; }
+    .score-base-grey { background-color: #e9ecef !important; color: #000000; } /* score == 0 */
+    .score-dark-red   { background-color: #8B0000 !important; color: #ffffff; } /* 0–25 (but not 0) */
+    .score-light-red  { background-color: #f8d7da !important; color: #7f1d1d; } /* >25–50 */
+    .score-yellow     { background-color: #fff3cd !important; color: #856404; } /* >50–75 */
+    .score-light-green{ background-color: #d4edda !important; color: #155724; } /* >75–90 */
+    .score-dark-green { background-color: #2e7d32 !important; color: #ffffff; } /* >90  */
+
+    .btn-control { padding: 12px 22px; font-size: 1.1em; }
+    .credentials-table { font-size: 1em; }
+    .habit-checkbox { transform: scale(1.3); }
+
+	/* --- Seamless horizontal separators across the whole table --- */
+	.habits-table{ border-collapse: separate; border-spacing: 0; } /* was collapse */
+	.habits-table td{ border-bottom: 0; }                          /* stop per-cell lines */
+	.habits-table tbody tr{ border-bottom: 1px solid #ddd; }       /* single full-width line */
+	.habits-table tbody tr:last-child{ border-bottom: 0; }         /* no line after the last row */
+
+
+    .scorecard {
+      background: #f8f9fa;
+      border: 1px solid #e0e0e0; border-radius: 10px; padding: 10px; margin-bottom: 20px;
+      text-align: center; position: absolute; top: 50%; right: 30px; transform: translateY(-50%);
+      width: 150px;
+      transition: background-color 0.2s, border-color 0.2s, color 0.2s;
     }
+    .scorecard.score-base-grey { background-color: #e9ecef; border-color: #dfe3e6; color: #000; }
+    .scorecard.score-dark-red   { background-color: #8B0000; border-color: #8B0000; color: #fff; }
+    .scorecard.score-light-red  { background-color: #f8d7da; border-color: #f5c2c7; }
+    .scorecard.score-yellow     { background-color: #fff3cd; border-color: #ffeeba; }
+    .scorecard.score-light-green{ background-color: #d4edda; border-color: #c3e6cb; }
+    .scorecard.score-dark-green { background-color: #2e7d32; border-color: #2e7d32; color: #fff; }
+    .scorecard.score-dark-red h2, .scorecard.score-dark-green h2 { color: #ffffff; }
 
-    .month-col {
-      display: flex;
-      flex-direction: column;
+    .scorecard h2 { font-size: 0.9em; margin-bottom: 5px; color: #333; }
+    .scorecard .score { font-size: 1.5em; font-weight: bold; display: inline-block; padding: 5px 10px; border-radius: 5px; }
+
+    /* Keep the first (editable) month identical and stable */
+    .month-col { width: 90px; min-width: 90px; }  /* same width at any zoom */
+    th.month-col, td.month-col { padding: 15px 10px; }
+    .month-input{
+      display:block; width:100%; min-width:0;
+      height:34px; line-height:34px; /* single line height like text */
+      padding:0 4px; margin:0;
+      text-align:center; color:#fff; font-weight:600; font-size:1em; letter-spacing:.2px;
+      background:transparent; border:1px solid transparent; border-radius:6px;
+      -webkit-appearance:none; appearance:none;
     }
-    .month-col > div {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 52.2px; /* Match lever item height */
-      border-right: 1px solid #eee;
-      border-bottom: 1px solid #eee;
-    }
-    .month-col > div.lever-category-placeholder {
-      height: 52.2px;
-      border-right: 1px solid #eee;
-      border-bottom: 1px solid #eee;
-      background-color: #f9f9f9; /* Match category style */
-    }
+    .month-input:hover { border-color: rgba(255,255,255,.25); background: rgba(255,255,255,.06); }
+    .month-input:focus { outline:none; border-color: rgba(255,255,255,.35); background: rgba(255,255,255,.10); }
 
-    .scores-col { text-align: right; }
+    /* Column width map for strict alignment */
+    .col-lever  { width: 100px; }
+    .col-habits { width: 650px; } /* Increased from 400px */
+    .col-month  { width: 90px; }
 
-    .score-dark-red { background-color: #ff4d4d; color: white; }
-    .score-light-red { background-color: #ff9999; }
-    .score-yellow { background-color: #ffff99; }
-    .score-light-green { background-color: #99ff99; }
-    .score-dark-green { background-color: #33cc33; color: white; }
-    .score-base-grey { background-color: #f0f0f0; }
-
-    #scores-col > div {
-      padding-top: 15.5px;
-      padding-bottom: 15.5px;
-      border-bottom: 1px solid #eee;
-    }
-
-    input[type="checkbox"] {
-      transform: scale(1.5);
-      cursor: pointer;
+    @media (max-width: 768px) {
+      html { font-size: 14px; }
+      .scorecard { width: 120px; padding: 8px; }
+      .scorecard h2 { font-size: 0.8em; }
+      .scorecard .score { font-size: 1.2em; padding: 4px 8px; }
     }
   </style>
 </head>
 <body>
   <div class="container">
+    <!-- Auth -->
     <div id="auth-section">
-      <div id="login-container" class="auth-container">
-        <div class="header"><h2>Login</h2></div>
-        <div class="input-group">
-          <label for="login-email">Email</label>
-          <input type="email" id="login-email" required />
-        </div>
-        <div class="input-group">
-          <label for="login-password">Password</label>
-          <input type="password" id="login-password" required />
-        </div>
-        <button id="login-btn" class="btn">Login</button>
-        <div class="switch-auth">
-          <p>Don't have an account? <button id="show-signup">Sign Up</button></p>
-        </div>
+      <div class="header">
+        <h1>How a Qualified Financial Advisor Will Advise?</h1>
+        <p>Your Next 12 Months Tracker</p>
       </div>
-      <div id="signup-container" class="auth-container" style="display: none;">
-        <div class="header"><h2>Sign Up</h2></div>
-        <div class="input-group">
-          <label for="signup-email">Email</label>
-          <input type="email" id="signup-email" required />
-        </div>
-        <div class="input-group">
-          <label for="signup-password">Password</label>
-          <input type="password" id="signup-password" required />
-        </div>
-        <button id="signup-btn" class="btn">Sign Up</button>
-        <div class="switch-auth">
-          <p>Already have an account? <button id="show-login">Login</button></p>
+
+      <div class="auth-container">
+        <div id="message-area"></div>
+        <div id="login-form" class="auth-form">
+          <h2 style="text-align: center; margin-bottom: 30px; color: #333;">Login to Your Account</h2>
+
+          <div class="form-group">
+            <label for="loginUserId">User ID</label>
+            <input type="text" id="loginUserId" placeholder="Enter your User ID" required>
+          </div>
+          <div class="form-group">
+            <label for="loginPassword">Password</label>
+            <input type="password" id="loginPassword" placeholder="Enter your password" required>
+          </div>
+          <button class="btn btn-primary" id="loginBtn" onclick="doLogin()">Login</button>
         </div>
       </div>
     </div>
 
-    <div id="dashboard-section" class="dashboard" style="display: none;">
-      <div class="top-bar">
-        <h1>Financial Habits Tracker</h1>
-        <div id="scorecard" class="scorecard score-base-grey">
-          <h2 id="current-month-header">&nbsp;</h2>
+    <!-- Dashboard -->
+    <div id="dashboard-section" class="dashboard">
+      <div class="header">
+        <h1>How a Qualified Financial Advisor Will Advise?</h1>
+        <p>Your Next 12 Months Tracker</p>
+        <div id="scorecard" class="scorecard">
+           <h2 id="current-month-header">Current Month's Financial Habit Score</h2>
           <div id="current-score" class="score">0</div>
         </div>
-        <button id="logout-btn" class="btn" style="width: auto;">Logout</button>
       </div>
-      <div class="grid-wrapper">
-        <div class="grid-container">
-          <div id="levers-col" class="grid-col levers-col">
-            <!-- Levers will be populated by JS -->
-          </div>
-          <div id="months-grid" class="months-grid">
-            <!-- Month grid will be populated by JS -->
-          </div>
-          <div id="scores-col" class="grid-col scores-col">
-            <!-- Scores will be populated by JS -->
-          </div>
+
+      <div class="dashboard-header">
+        <div class="user-info">
+          <h3>Welcome, <span id="userName"></span></h3>
         </div>
+        <button class="logout-btn" onclick="logout()">Logout</button>
+      </div>
+
+      <div id="dashboard-message"></div>
+
+       <div style="overflow-x: auto;">
+        <table class="habits-table" id="habitsTable">
+          <!-- >>> Strict column widths so rows align perfectly -->
+          <colgroup>
+            <col class="col-lever">
+            <col class="col-habits">
+            <col class="col-month"><col class="col-month"><col class="col-month"><col class="col-month">
+            <col class="col-month"><col class="col-month"><col class="col-month"><col class="col-month">
+            <col class="col-month"><col class="col-month"><col class="col-month"><col class="col-month">
+          </colgroup>
+
+          <thead>
+            <tr>
+              <th>Levers</th>
+              <!-- LEFT aligned header -->
+              <th class="habits-header">Financial Habits</th>
+
+               <!-- First month: editable but visually identical -->
+              <th id="month-1-th" class="month-col">
+                <input id="firstMonthInput" class="month-input" value="Apr-25" aria-label="First month (e.g., Sep-25 or 2025-09)">
+              </th>
+              <!-- Other months -->
+             <th class="month-col"><span id="month-2">May-25</span></th>
+              <th class="month-col"><span id="month-3">Jun-25</span></th>
+              <th class="month-col"><span id="month-4">Jul-25</span></th>
+              <th class="month-col"><span id="month-5">Aug-25</span></th>
+              <th class="month-col"><span id="month-6">Sep-25</span></th>
+              <th class="month-col"><span id="month-7">Oct-25</span></th>
+               <th class="month-col"><span id="month-8">Nov-25</span></th>
+              <th class="month-col"><span id="month-9">Dec-25</span></th>
+              <th class="month-col"><span id="month-10">Jan-26</span></th>
+              <th class="month-col"><span id="month-11">Feb-26</span></th>
+              <th class="month-col"><span id="month-12">Mar-26</span></th>
+            </tr>
+          </thead>
+
+          <!-- Score row -->
+          <tbody>
+            <tr class="score-row">
+              <td class="lever-cell">Score</td>
+              <td class="score-label-cell"><strong>Your Financial Habits Score</strong></td>
+
+              <td class="score-cell month-col" id="score-m1">0</td><td class="score-cell month-col" id="score-m2">0</td>
+              <td class="score-cell month-col" id="score-m3">0</td><td class="score-cell month-col" id="score-m4">0</td>
+               <td class="score-cell month-col" id="score-m5">0</td><td class="score-cell month-col" id="score-m6">0</td>
+              <td class="score-cell month-col" id="score-m7">0</td><td class="score-cell month-col" id="score-m8">0</td>
+              <td class="score-cell month-col" id="score-m9">0</td><td class="score-cell month-col" id="score-m10">0</td>
+              <td class="score-cell month-col" id="score-m11">0</td><td class="score-cell month-col" id="score-m12">0</td>
+            </tr>
+           </tbody>
+
+          <!-- Habits -->
+          <tbody id="habitsTableBody"></tbody>
+        </table>
+      </div>
+
+      <div class="add-habit-section">
+        <h4 style="margin-bottom: 15px; color: #333; font-size: 1.2em;">Add New Financial Habit</h4>
+        <div class="add-habit-form">
+          <div class="form-group">
+            <label for="newLever">Lever Category</label>
+            <select id="newLever">
+              <option value="Keep risk in check">Keep risk in check</option>
+              <option value="Save more">Save more</option>
+               <option value="Earn more">Earn more</option>
+              <option value="Cut unwanted expenses">Cut unwanted expenses</option>
+              <option value="Others">Others</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="newHabit">Habit Description</label>
+             <input type="text" id="newHabit" placeholder="Enter new financial habit..." maxlength="150">
+          </div>
+          <button class="btn-add" onclick="addNewHabit()">Add Habit</button>
+        </div>
+      </div>
+
+      <div class="controls" style="display: flex; gap: 15px; margin-top: 20px;">
+        <button class="btn-control btn-save" style="background: #6c757d; color: white;" onclick="saveChanges()">Save Changes</button>
+        <button class="btn-control btn-reset" style="background: #666; color: white;" onclick="resetToDefaults()">Reset to Defaults</button>
       </div>
     </div>
   </div>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import {
-      getAuth,
-      createUserWithEmailAndPassword,
-      signInWithEmailAndPassword,
-      onAuthStateChanged,
-      signOut
-    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-    import {
-      getFirestore, doc, setDoc, getDoc, collection,
-    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
+  <script>
+    // --- Google Sheets Integration ---
+    const GOOGLE_SHEET_ID = '1bzJIZbT6OJ1U6HaMxvk1nXDYZzyroP3zLDluBgTnYHw';
+    const GOOGLE_API_KEY = 'AIzaSyCWvIFxQeUkmzJ8AXWhxC9mg3HIYBzvI6o';
+    const SHEET_NAME = 'Sheet1';
+    const SHEET_RANGE = 'A:C';
+    let usersFromSheet = {}; // Cache for user data
 
     // --- Firebase Configuration ---
     const firebaseConfig = {
-      apiKey: "YOUR_API_KEY",
-      authDomain: "YOUR_AUTH_DOMAIN",
-      projectId: "YOUR_PROJECT_ID",
-      storageBucket: "YOUR_STORAGE_BUCKET",
-      messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-      appId: "YOUR_APP_ID"
+      apiKey: "AIzaSyCRnNkMDtn2LGFY_kd2lTnSWl4ZjUluWrQ",
+      authDomain: "financial-habits-tracker.firebaseapp.com",
+      projectId: "financial-habits-tracker",
     };
-
-    // --- Initialize Firebase ---
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
+    let firebaseInitialized = false, db = null;
+    try {
+      if (firebaseConfig.apiKey && firebaseConfig.apiKey !== "your-api-key") {
+        firebase.initializeApp(firebaseConfig);
+        db = firebase.firestore();
+        firebaseInitialized = true;
+      }
+    } catch (error) { console.error("Firebase init failed:", error); }
 
     let currentUser = null;
-    let userData = {};
-
-    const months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+    let userHabits = [];
+    const defaultHabits = [
+      { lever: "Keep risk in check", habit: "Maintain 6 months of emergency funds" },
+      { lever: "Keep risk in check", habit: "Hold term cover of 5x-10x annual income" },
+      { lever: "Keep risk in check", habit: "Cover entire family in health insurance policy" },
+      { lever: "Save more", habit: "Invest 20%-30% of monthly gross income" },
+      { lever: "Save more", habit: "Keep auto-debit SIPs b/w 1st-5th every month" },
+      { lever: "Save more", habit: "Maintain SIPs in 5%-15% yearly 'Step-up' mode" },
+      { lever: "Earn more", habit: "Spend 10 hrs/month on marketable upskilling" },
+      { lever: "Earn more", habit: "Read 1 hour/week on importance of asset allocation" },
+      { lever: "Cut unwanted expenses", habit: "Maintain zero personal/CC loans" },
+      { lever: "Cut unwanted expenses", habit: "Eat home-cooked food 6 days/week" },
+      { lever: "Cut unwanted expenses", habit: "Pay credit card bill in full" },
+      { lever: "Cut unwanted expenses", habit: "Invest only via direct MF plans" } 
     ];
-    const levers = {
-      'Earning': [
-        'Side Hustle', 'Asking for a Raise', 'Job Hopping', 'Investing in stocks',
-        'Selling items', 'Renting out space'
-      ],
-      'Spending': [
-        'Cutting subscriptions', 'Cooking at home', 'Using public transport',
-        'Buying generic brands', 'Using coupons', 'Avoiding impulse buys'
-      ],
-      'Saving & Investing': [
-        'Automating savings', 'Opening a high-yield savings account',
-        'Investing in index funds', 'Contributing to a retirement account',
-        'Creating a budget', 'Setting financial goals'
-      ],
-      'Borrowing': [
-        'Paying off high-interest debt', 'Improving credit score',
-        'Avoiding new debt', 'Using a balance transfer credit card',
-        'Refinancing loans', 'Borrowing from family or friends'
-      ]
-    };
-
-    function getPrevMonthIndex() {
-      const d = new Date();
-      d.setDate(0);
-      return d.getMonth();
+    
+    // --- Months handling (editable first month) ---
+    const MONTH_ABBR = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    let months = [
+      'Apr-25','May-25','Jun-25','Jul-25','Aug-25','Sep-25','Oct-25','Nov-25','Dec-25','Jan-26','Feb-26','Mar-26'
+    ];
+    function formatMonthLabel(d) {
+      const m = MONTH_ABBR[d.getMonth()];
+      const yy = String(d.getFullYear()).slice(-2);
+      return `${m}-${yy}`;
     }
 
-    onAuthStateChanged(auth, async (user) => {
-      if (user) {
+    function parseMonthLabel(s) {
+      const v = (s || '').trim(); // Accept 'YYYY-MM'
+      let m; if (/^\d{4}-\d{2}$/.test(v)) {
+        const [y, mm] = v.split('-').map(Number); return new Date(y, mm - 1, 1);
+      }
+      // Accept 'Mon-YY' (e.g., Sep-25)
+      m = v.match(/^([A-Za-z]{3})[-\s]?(\d{2})$/); if (m) {
+        const mon = MONTH_ABBR.findIndex(x => x.toLowerCase() === m[1].toLowerCase()); if (mon >= 0) return new Date(2000 + Number(m[2]), mon, 1);
+      }
+      return null;
+    }
+
+    function setMonthsFromStart(startDate) {
+      for (let i = 0; i < 12; i++) {
+        const d = new Date(startDate.getFullYear(), startDate.getMonth() + i, 1);
+        months[i] = formatMonthLabel(d);
+        if (i === 0) {
+          document.getElementById('firstMonthInput').value = months[0];
+        } else {
+          const el = document.getElementById(`month-${i+1}`); if (el) el.textContent = months[i];
+        }
+      }
+      calculateScores();
+    }
+
+    function wireMonthInput() {
+      const inp = document.getElementById('firstMonthInput');
+      if (!inp) return; inp.addEventListener('change', () => {
+        const d = parseMonthLabel(inp.value);
+        if (!d) {
+          alert('Please enter month like "Sep-25" or "2025-09".');
+          inp.value = months[0];
+          return;
+        }
+        setMonthsFromStart(d);
+      });
+    }
+
+    // --- Authentication ---
+    async function fetchUsersFromSheet() {
+      const url = `https://sheets.googleapis.com/v4/spreadsheets/${GOOGLE_SHEET_ID}/values/${SHEET_NAME}!${SHEET_RANGE}?key=${GOOGLE_API_KEY}`;
+      try {
+        const response = await fetch(url);
+        if (!response.ok) {
+            const errorData = await response.json();
+            console.error('Google Sheets API Error:', errorData);
+            throw new Error(`Network response was not ok (${response.status})`);
+        }
+        const data = await response.json();
+        const users = {};
+        if (data.values) {
+            // Assuming data rows have the format [User Name, User ID, Password]
+            for (const row of data.values) {
+                const userName = row[0] || '';
+                const userId = row[1] || '';
+                const password = row[2] || '';
+                if (userId) { // Check if userId exists
+                    users[userId] = { userId: userId, password: password, userName: userName || userId };
+                }
+            }
+        }
+        return users;
+      } catch (error) {
+        console.error('Failed to fetch user data from Google Sheets:', error);
+        alert('Error connecting to the user database. Please check the console for details and try again later.');
+        return null;
+      }
+    }
+
+    window.onload = async () => {
+      wireMonthInput();
+      usersFromSheet = await fetchUsersFromSheet() || {};
+      const savedUserId = localStorage.getItem('currentUserId');
+
+      if (savedUserId && usersFromSheet[savedUserId]) {
+        currentUser = usersFromSheet[savedUserId];
+        showDashboard();
+      }
+    };
+
+    async function doLogin() {
+      // If users haven't been fetched yet (e.g., on first load error), try again.
+      if (Object.keys(usersFromSheet).length === 0) {
+          usersFromSheet = await fetchUsersFromSheet() || {};
+          if (!usersFromSheet) return; // Exit if fetch failed
+      }
+      const userId = document.getElementById('loginUserId').value.trim();
+      const password = document.getElementById('loginPassword').value;
+      const user = usersFromSheet[userId];
+
+      if (user && user.password === password) {
         currentUser = user;
-        await loadUserData();
+        localStorage.setItem('currentUserId', userId);
         showDashboard();
       } else {
-        showAuth();
+        alert('Invalid User ID or password');
       }
-    });
-
-    document.getElementById('login-btn').addEventListener('click', () => {
-      const email = document.getElementById('login-email').value;
-      const password = document.getElementById('login-password').value;
-      signInWithEmailAndPassword(auth, email, password)
-        .catch(error => alert(error.message));
-    });
-
-    document.getElementById('signup-btn').addEventListener('click', () => {
-      const email = document.getElementById('signup-email').value;
-      const password = document.getElementById('signup-password').value;
-      createUserWithEmailAndPassword(auth, email, password)
-        .catch(error => alert(error.message));
-    });
-
-    document.getElementById('logout-btn').addEventListener('click', () => signOut(auth));
-    document.getElementById('show-signup').addEventListener('click', () => {
-      document.getElementById('login-container').style.display = 'none';
-      document.getElementById('signup-container').style.display = 'block';
-    });
-    document.getElementById('show-login').addEventListener('click', () => {
-      document.getElementById('signup-container').style.display = 'none';
-      document.getElementById('login-container').style.display = 'block';
-    });
+    }
 
     function showDashboard() {
       document.getElementById('auth-section').style.display = 'none';
       document.getElementById('dashboard-section').style.display = 'block';
-      initializeDashboard();
+      document.getElementById('userName').textContent = currentUser.userName;
+      loadUserHabits();
     }
-
-    function showAuth() {
-      document.getElementById('dashboard-section').style.display = 'none';
-      document.getElementById('auth-section').style.display = 'block';
-    }
-
-    async function loadUserData() {
-      if (!currentUser) return;
-      const userDocRef = doc(db, 'users', currentUser.uid);
-      const docSnap = await getDoc(userDocRef);
-      if (docSnap.exists()) {
-        userData = docSnap.data();
+    
+    // --- Data and UI Rendering (No changes below this line) ---
+    async function loadUserHabits() {
+      if (firebaseInitialized) {
+        const doc = await db.collection('users').doc(currentUser.userId).get();
+        userHabits = doc.exists && doc.data().habits ? doc.data().habits : initializeDefaultHabits();
       } else {
-        // Initialize with empty data if no document exists
-        userData = {};
-        months.forEach(month => {
-          userData[month] = {};
+        const stored = localStorage.getItem(`habits_${currentUser.userId}`);
+        userHabits = stored ? JSON.parse(stored) : initializeDefaultHabits();
+      }
+      renderHabitsTable();
+    }
+
+    function initializeDefaultHabits() {
+      return defaultHabits.map((item, index) => ({
+        id: Date.now() + index,
+        lever: item.lever,
+        habit: item.habit,
+        months: new Array(12).fill(false)
+      }));
+    }
+
+    async function saveChanges() {
+      document.querySelectorAll('.habit-text').forEach(div => {
+        const index = parseInt(div.dataset.index, 10);
+        if (userHabits[index]) {
+            userHabits[index].habit = div.textContent;
+        }
+      });
+      if (firebaseInitialized) {
+        await db.collection('users').doc(currentUser.userId).set({ habits: userHabits });
+      } else {
+        localStorage.setItem(`habits_${currentUser.userId}`, JSON.stringify(userHabits));
+      }
+      alert('Changes saved successfully!');
+      renderHabitsTable();
+    }
+
+    function renderHabitsTable() {
+      const tableBody = document.getElementById('habitsTableBody');
+      tableBody.innerHTML = '';
+      const leverOrder = ["Keep risk in check", "Save more", "Earn more", "Cut unwanted expenses", "Others"];
+      const habitsByLever = userHabits.reduce((acc, habit) => {
+        acc[habit.lever] = acc[habit.lever] || [];
+        acc[habit.lever].push(habit);
+        return acc;
+      }, {});
+      let habitIndexCounter = -1;
+      leverOrder.forEach(lever => {
+        const habits = habitsByLever[lever];
+        if (!habits) return;
+
+        habits.forEach((habitData, i) => {
+          const originalIndex = userHabits.findIndex(h => h.id === habitData.id);
+          const row = document.createElement('tr');
+
+          if (i === 0) {
+            const leverCell = document.createElement('td');
+             leverCell.className = 'lever-cell';
+            leverCell.textContent = lever;
+            leverCell.rowSpan = habits.length;
+            row.appendChild(leverCell);
+          }
+
+          const habitCell = document.createElement('td');
+          habitCell.className = 'habit-cell';
+          habitCell.innerHTML = `
+             <div class="habit-text" contenteditable="true" data-index="${originalIndex}">${habitData.habit}</div>
+            <button class="habit-delete-btn" title="Delete" aria-label="Delete habit" onclick="deleteHabit(${originalIndex})">🗑️</button>
+          `;
+          row.appendChild(habitCell);
+          for (let month = 0; month < 12; month++) {
+            const monthCell = document.createElement('td');
+            monthCell.className = 'month-col'; /* uniform column width */
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.className = 'habit-checkbox';
+            checkbox.checked = habitData.months[month];
+            checkbox.onchange = () => {
+              userHabits[originalIndex].months[month] = checkbox.checked;
+              calculateScores();
+            };
+            monthCell.appendChild(checkbox);
+            row.appendChild(monthCell);
+          }
+
+          tableBody.appendChild(row);
         });
+      });
+
+      calculateScores();
+    }
+
+    function deleteHabit(index) {
+      if (confirm('Are you sure you want to delete this habit?')) {
+        userHabits.splice(index, 1);
+        saveChanges(); // Save after deleting
       }
     }
 
-    async function saveUserData() {
-      if (!currentUser) return;
-      const userDocRef = doc(db, 'users', currentUser.uid);
-      await setDoc(userDocRef, userData, { merge: true });
+    function addNewHabit() {
+      const lever = document.getElementById('newLever').value;
+      const habitText = document.getElementById('newHabit').value.trim();
+      if (!habitText) { alert('Please enter a habit description'); return; }
+      userHabits.push({
+        id: Date.now(),
+        lever: lever,
+        habit: habitText,
+        months: new Array(12).fill(false)
+      });
+      saveChanges();
+      document.getElementById('newHabit').value = '';
     }
 
-    function initializeDashboard() {
-      const leversCol = document.getElementById('levers-col');
-      leversCol.innerHTML = ''; // Clear previous content
-
-      for (const category in levers) {
-        const categoryDiv = document.createElement('div');
-        categoryDiv.className = 'lever-category';
-        categoryDiv.innerHTML = `<strong>${category}</strong>`;
-        leversCol.appendChild(categoryDiv);
-
-        for (const lever of levers[category]) {
-          const leverDiv = document.createElement('div');
-          leverDiv.className = 'lever-item';
-          leverDiv.textContent = lever;
-          leversCol.appendChild(leverDiv);
-        }
+    async function resetToDefaults() {
+      if (confirm('Are you sure you want to reset all habits to defaults? This will erase current habits.')) {
+        userHabits = initializeDefaultHabits();
+        await saveChanges();
       }
-
-      const monthsGrid = document.getElementById('months-grid');
-      monthsGrid.innerHTML = '';
-      const gridHeader = document.createElement('div');
-      gridHeader.className = 'grid-header';
-      gridHeader.style.display = 'contents';
-      months.forEach(month => {
-        const monthHeader = document.createElement('div');
-        monthHeader.textContent = month;
-        gridHeader.appendChild(monthHeader);
-      });
-      monthsGrid.appendChild(gridHeader);
-
-      const gridBody = document.createElement('div');
-      gridBody.className = 'grid-body';
-      gridBody.style.display = 'contents';
-      months.forEach((month, monthIndex) => {
-        const monthCol = document.createElement('div');
-        monthCol.className = 'month-col';
-        let leverIndex = 0;
-        for (const category in levers) {
-            const placeholder = document.createElement('div');
-            placeholder.className = 'lever-category-placeholder';
-            monthCol.appendChild(placeholder);
-
-            levers[category].forEach(lever => {
-                const cell = document.createElement('div');
-                const checkbox = document.createElement('input');
-                checkbox.type = 'checkbox';
-                checkbox.id = `cb-m${monthIndex}-l${leverIndex}`;
-                checkbox.checked = userData[month]?.[lever] || false;
-                checkbox.addEventListener('change', async (e) => {
-                  if (!userData[month]) userData[month] = {};
-                  userData[month][lever] = e.target.checked;
-                  await saveUserData();
-                  updateScores();
-                });
-                cell.appendChild(checkbox);
-                monthCol.appendChild(cell);
-                leverIndex++;
-            });
-        }
-        gridBody.appendChild(monthCol);
-      });
-      monthsGrid.appendChild(gridBody);
-
-      updateScores();
     }
 
-    function updateScores() {
-      const scoresCol = document.getElementById('scores-col');
-      scoresCol.innerHTML = `
-        <div class="grid-header" style="height: 52.2px; border-bottom: 1px solid #eee;">
-            <div>Score</div>
-        </div>`;
+    function getPrevMonthIndex() {
+      const today = new Date();
+      const prev = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+      const label = formatMonthLabel(prev);
+      let idx = months.indexOf(label);
+      if (idx !== -1) return idx;
+
+      idx = -1;
       for (let i = 0; i < months.length; i++) {
-        const scoreCell = document.createElement('div');
-        scoreCell.id = `score-m${i + 1}`;
-        const month = months[i];
-        const monthData = userData[month] || {};
-        const score = Object.values(monthData).filter(Boolean).length;
+        const d = parseMonthLabel(months[i]);
+        if (d && d <= prev) idx = i;
+      }
+      return idx === -1 ? 0 : idx;
+    }
+
+    function calculateScores() {
+      const totalHabits = userHabits.length;
+      for (let month = 0; month < 12; month++) {
+        let checkedCount = userHabits.filter(h => h.months[month]).length;
+        const score = totalHabits > 0 ? Math.round((checkedCount / totalHabits) * 100) : 0;
+        const scoreCell = document.getElementById(`score-m${month + 1}`);
         scoreCell.textContent = score;
-        scoresCol.appendChild(scoreCell);
-        
-        let cls = 'score-base-grey';
-        if (score > 75) cls = 'score-dark-green';
-        else if (score > 60) cls = 'score-light-green';
-        else if (score > 40) cls = 'score-yellow';
+
+        scoreCell.className = 'score-cell month-col';
+        const bands = ['score-base-grey','score-dark-red','score-light-red','score-yellow','score-light-green','score-dark-green'];
+        bands.forEach(b => scoreCell.classList.remove(b));
+
+        let cls = 'score-dark-red';
+        if (score === 0) cls = 'score-base-grey';
+        else if (score > 90) cls = 'score-dark-green';
+        else if (score > 75) cls = 'score-light-green';
+        else if (score > 50) cls = 'score-yellow';
         else if (score > 25) cls = 'score-light-red';
-        else if (score > 0) cls = 'score-dark-red';
         scoreCell.classList.add(cls);
       }
 
@@ -450,9 +661,8 @@
       localStorage.removeItem('currentUserId');
       document.getElementById('auth-section').style.display = 'block';
       document.getElementById('dashboard-section').style.display = 'none';
-      document.getElementById('levers-col').innerHTML = '';
-      document.getElementById('months-grid').innerHTML = '';
-      document.getElementById('scores-col').innerHTML = '';
+      document.getElementById('loginUserId').value = '';
+      document.getElementById('loginPassword').value = '';
     }
   </script>
 </body>
