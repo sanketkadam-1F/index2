@@ -130,6 +130,13 @@
     .credentials-table { font-size: 1em; }
     .habit-checkbox { transform: scale(1.3); }
 
+	/* --- Seamless horizontal separators across the whole table --- */
+	.habits-table{ border-collapse: separate; border-spacing: 0; } /* was collapse */
+	.habits-table td{ border-bottom: 0; }                          /* stop per-cell lines */
+	.habits-table tbody tr{ border-bottom: 1px solid #ddd; }       /* single full-width line */
+	.habits-table tbody tr:last-child{ border-bottom: 0; }         /* no line after the last row */
+
+
     .scorecard {
       background: #f8f9fa; border: 1px solid #e0e0e0; border-radius: 10px; padding: 10px; margin-bottom: 20px;
       text-align: center; position: absolute; top: 50%; right: 30px; transform: translateY(-50%); width: 150px;
