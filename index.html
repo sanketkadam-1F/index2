@@ -428,10 +428,13 @@
         const data = await response.json();
         const users = {};
         if (data.values) {
-            // Assuming data rows start from index 0 and have format [userId, password, userName]
+            // Assuming data rows have the format [User Name, User ID, Password]
             for (const row of data.values) {
-                if (row[0]) { // Check if userId exists
-                    users[row[0]] = { userId: row[0], password: row[1] || '', userName: row[2] || row[0] };
+                const userName = row[0] || '';
+                const userId = row[1] || '';
+                const password = row[2] || '';
+                if (userId) { // Check if userId exists
+                    users[userId] = { userId: userId, password: password, userName: userName || userId };
                 }
             }
         }
